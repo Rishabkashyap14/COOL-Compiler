@@ -1,0 +1,28 @@
+- We have a name-value pair list here 
+- Left side we have the name string and the right side is the value
+- we have 4 info -> Type of the DB
+	- Can be any alphanumeric starting ith alphs
+	- Second, third and fourth are the same thing
+	- Third can have an underscore in the end, last has pure integers.
+
+THE HEADER FILE
+
+The header file consists of a list of all the things we need to identify the strings that we have mentioned in the config file previously. 
+This will be imported directly into the lex file that we shall be using later on in the code.
+We hence look into all the possibilities of symbols associated with the same and enter it into the table. 
+
+THE LEX FILE
+
+Here we include our previous header file and analyze what should give what o/p
+Based on this we have three parts to it. 
+The first part is initialized with a "{%" and ends with "%}"
+This is an optional incluseion used only if we have to include anything extra such as header files and whatnot.
+The entire first part works as a part of the C programming language, hence all we do is write C code to include everything we need
+
+The second part consists of the main lex code, where we enter the CFG that is read from the user and the output it is supposed to give for every string it reads
+In our case, the header file shows us everything that we need to output depending on what is passed. 
+We can also include our own Context Free Grammar (CFG) to execute the same.
+We add a dot '.' to represent the rest of the symbols that we do not use and send in an error message for the same. 
+We have to add in all the specific keywords first before adding the more general ones later because lex reads from top to bottom while compiling
+
+The third part consists of transforming the entire thing into a C program, and hence we use a funcgtion called yywrap() to complete this process.
