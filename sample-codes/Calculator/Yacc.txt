@@ -1,0 +1,23 @@
+The YACC is used to create a psrser for the lanaguage that we have created using the Lex code generator.
+It has an extension .y and produced=s a header file as well as a C file. We combine the two C files (lex.yy.c + yacc.c) to greate our new language. 
+
+YACC also has 3 main parts to it.
+The FIRST part is optional and consists of all the headers and whatnot required to execute the program. It also consists of the yacc definitions, along with the %start, %tokens, %union, and %type.
+The SECOND part is the production part where we include all the actions that are to be performed
+Multiple RHS may follow separated by a '|'
+Actions associated with a rule are entered in braces.
+The THIRD part consists of the valid C code that supports the lang processing
+Symbol Table implementation
+Functions that might be called by actions associated with the productions in the second part.
+
+BASICS
+- $1, $2....... $n can be refered to the values associated with symbols	
+- $$ refers to the value of the left
+- Every symbol has a value associated wih it (including token and non-terminals)
+- Default action:
+	$$ = $I
+EXAMPLES:
+- statement: identifier '+' identifier
+	{$$ = $1 + $3;}
+- statement: identifier '-' identifier
+	{$$ = $3 - $1;}
