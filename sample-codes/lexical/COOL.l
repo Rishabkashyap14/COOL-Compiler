@@ -37,7 +37,7 @@ if (lex_verbose) { \
 
 char string_buf[MAX_STR_CONST]; /* to assemble string constants */
 char *string_buf_ptr;
-extern YYSTYPE cool_yylval;
+extern YYSTYPE yylval;
 int curr_lineno=1;
 int mcomment_count; /* to handle nested multiline comments */
 %}
@@ -46,9 +46,8 @@ INT			[0-9]+
 IDENTIFIER		[a-zA-Z][a-zA-Z0-9_]*
 TYPE_ID			[A-Z][a-zA-Z0-9_]*
 OBJ_ID			[a-z][a-zA-Z0-9_]*
-COMMENT_S		"--".*
-COMMENT_M1		[\(\)\*]|[^\(\)\*\n]+
-COMMENT_M2		(\*).*(\*)
+COMMENT_S		"--".*	
+COMMENT_M		(\*).*(\*)
 CLASS			[Cc][Ll][Aa][Ss][Ss]
 ELSE			[Ee][Ll][Ss][Ee]
 FI			[Ff][Ii]
@@ -69,7 +68,7 @@ NOT			[Nn][Oo][Tt]
 TRUE			t[Rr][Uu][Ee]
 FALSE			f[Aa][Ll][Ss][Ee]
 NULL			(\0)
-WHITESPACE		[ \t\n\f\r\v]+
+WHITESPACE		[ \t\f\r\v]+
 PARENTHESIS_O		\(
 PARENTHESIS_C		\)
 FLOWER_O		\{
@@ -77,9 +76,197 @@ FLOWER_C		\}
 SQUARE_O		\[
 SQUARE_C		\]
 PUNCTUATION		[@;:,\(\)\{\}\+\-\*/=~<\.]
-ESCAPE_SEQ		\\
+ESCAPE			\\
 DARROW          	=>
 LE			<=
 ASSIGN			<-
 STRING			[^\n\"\\]+
+DQUOTE			\"
+NEWLINE			(\n)
 
+%x 	COMMENT_M STRING ESCAPE
+
+%%
+
+{CLASS} {
+    LOGT(CLASS);
+    return CLASS;
+}
+{ELSE} {
+    LOGT(ELSE);
+    return ELSE;
+}
+{FI} {
+    LOGT(FI);
+    return FI;
+}
+{IF} {
+    LOGT(IF);
+    return IF;
+}
+{IN} {
+    LOGT(IN);
+    return IN;
+}
+{INHERITS} {
+    LOGT(INHERITS);
+    return INHERITS;
+}
+{LET} {
+    LOGT(LET);
+    return LET;
+}
+{LOOP} {
+    LOGT(LOOP);
+    return LOOP;
+}
+{POOL} {
+    LOGT(POOL);
+    return POOL;
+}
+{THEN} {
+    LOGT(THEN);
+    return THEN;
+}
+{WHILE} {
+    LOGT(WHILE);
+    return WHILE;
+}
+{CASE} {
+    LOGT(CASE);
+    return CASE;
+}
+{ESAC} {
+    LOGT(ESAC);
+    return ESAC;
+}
+{OF} {
+    LOGT(OF);
+    return OF;
+}
+{NEW} {
+    LOGT(NEW);
+    return NEW;
+}
+{ISVOID} {
+    LOGT(ISVOID);
+    return ISVOID;
+}
+{NOT} {
+    LOGT(NOT);
+    return NOT;
+}
+
+{TRUE} {
+    LOGB;
+    return TRUE;
+}
+
+{FALSE} {
+    LOGB;
+    return FALSE;
+}
+		 
+{TYPE_ID} {
+    yylval.symbol = idtable.add_string(yytext,yyleng);
+    LOGS(TYPEID);
+    return TYPEID;
+}
+{OBJ_ID} {
+    yylval.symbol = idtable.add_string(yytext,yyleng);
+    LOGS(OBJECTID);
+    return OBJECTID;
+}
+{DQUOTE} {
+    LOGT("Start of string");
+    BEGIN(STRING);
+    string_buf_ptr = string_buf;
+}
+<STRING>{DQUOTE} {
+    BEGIN(INITIAL);
+    if (string_buf_ptr < string_buf + MAX_STR_CONST) {
+        *string_buf_ptr = '\0';
+        cool_yylval.symbol = stringtable.add_string(string_buf);
+	LOGS(STR_CONST);
+        return STR_CONST;
+    } else {
+        cool_yylval.error_msg = "String constant too long";
+	LOGE;
+        return ERROR;
+    }
+}
+<STRING>{ESCAPE} {
+    BEGIN(ESCAPE);
+}
+<STRING>{ZERO} {
+    cool_yylval.error_msg = "String contains null character";
+    LOGE;
+    return ERROR;
+}
+<STRING><<EOF>> {
+    cool_yylval.error_msg = "EOF in string constant";
+    LOGE;
+    return 0;
+}
+<STRING>{NEWLINE} {
+    cool_yylval.error_msg = "Unterminated string constant";
+    LOGE;
+    curr_lineno++;
+    return ERROR;
+}
+<ESCAPE>. {
+    char c = yytext[0];
+    if (c == 't') {
+        c = '\t';
+    } else if (c == 'b') {
+        c = '\b';
+    } else if (c == 'n') {
+        c = '\n';
+    } else if (c == 'f') {
+        c = '\f';
+    }
+    if (string_buf_ptr < string_buf + MAX_STR_CONST - 1) {
+        *string_buf_ptr++ = c;
+    }
+    BEGIN(STRING);
+}
+<ESCAPE>{NEWLINE} {
+    curr_lineno++;
+    BEGIN(STRING);
+}
+<STRING>{STRING} {
+    int remaining_size = MAX_STR_CONST - (string_buf_ptr - string_buf) - 1;
+    int to_copy = yyleng > remaining_size ? remaining_size : yyleng;
+    strcpy(string_buf_ptr, yytext, to_copy);
+    string_buf_ptr += to_copy;
+}
+    
+{INTEGER} {
+    yylval.symbol = inttable.add_string(yytext);
+    LOGS(INT_CONST)
+    return INT_CONST;
+}
+{DARROW} {
+    LOGT(DARROW);
+    return DARROW;
+}
+{PUNCTUATION} {
+    LOGT();
+    return yytext[0];
+}
+{LE} {
+    LOGT(LE)
+    return LE;
+}
+{ASSIGN} {
+    LOGT(ASSIGN)
+    return ASSIGN;
+}
+{WHITESPACE} LOGT(WHITESPACE);
+. {
+    yylval.error_msg = "Unexpected character";
+    LOGE;
+    return ERROR;
+}
+
+%%
