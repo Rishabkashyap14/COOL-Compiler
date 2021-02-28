@@ -42,7 +42,7 @@ int curr_lineno=1;
 int mcomment_count; /* to handle nested multiline comments */
 %}
 
-INT			[0-9]+
+INTEGER			[0-9]+
 IDENTIFIER		[a-zA-Z][a-zA-Z0-9_]*
 TYPE_ID			[A-Z][a-zA-Z0-9_]*
 OBJ_ID			[a-z][a-zA-Z0-9_]*
@@ -198,7 +198,7 @@ NEWLINE			(\n)
 <STRING>{ESCAPE} {
     BEGIN(ESCAPE);
 }
-<STRING>{ZERO} {
+<STRING>{NULL} {
     cool_yylval.error_msg = "String contains null character";
     LOGE;
     return ERROR;
@@ -270,3 +270,10 @@ NEWLINE			(\n)
 }
 
 %%
+
+int main(void)
+{
+	yylex();
+}
+
+yywrap() { return 1;}
