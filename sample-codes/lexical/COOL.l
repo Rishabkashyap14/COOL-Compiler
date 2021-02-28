@@ -4,10 +4,10 @@
 #include<ctype.h>
 #include<string.h>
 #include<errno.h>
+#include"cool.h"
 
 
 extern int lex_verbose;
-
 #define LOG_LEVEL 1
 #define LOGE \
 if (lex_verbose) { \
@@ -37,7 +37,7 @@ if (lex_verbose) { \
 
 char string_buf[MAX_STR_CONST]; /* to assemble string constants */
 char *string_buf_ptr;
-extern YYSTYPE yylval;
+char *yylval;
 int curr_lineno=1;
 int mcomment_count; /* to handle nested multiline comments */
 %}
@@ -190,7 +190,7 @@ NEWLINE			(\n)
 	LOGS(STR_CONST);
         return STR_CONST;
     } else {
-        cool_yylval.error_msg = "String constant too long";
+        yylval.error_msg = "String constant too long";
 	LOGE;
         return ERROR;
     }
@@ -199,17 +199,17 @@ NEWLINE			(\n)
     BEGIN(ESCAPE);
 }
 <STRING>{NULL} {
-    cool_yylval.error_msg = "String contains null character";
+    yylval.error_msg = "String contains null character";
     LOGE;
     return ERROR;
 }
 <STRING><<EOF>> {
-    cool_yylval.error_msg = "EOF in string constant";
+    yylval.error_msg = "EOF in string constant";
     LOGE;
     return 0;
 }
 <STRING>{NEWLINE} {
-    cool_yylval.error_msg = "Unterminated string constant";
+    yylval.error_msg = "Unterminated string constant";
     LOGE;
     curr_lineno++;
     return ERROR;
@@ -270,10 +270,5 @@ NEWLINE			(\n)
 }
 
 %%
-
-int main(void)
-{
-	yylex();
-}
 
 yywrap() { return 1;}
