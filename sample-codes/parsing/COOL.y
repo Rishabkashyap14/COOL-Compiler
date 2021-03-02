@@ -4,7 +4,7 @@ void yyerror (char *s);
 #include <stdlib.h>
 
 extern char *curr_filename;	/* Findout where this is */
-
+int curr_lineno=0;
 extern int yylex();
 Program ast_root;	      /* the result of the parse  */
 Class parse_results;		/*For semantic Analysis */
@@ -139,12 +139,32 @@ formals_list	: formal
 	     		{ $$ = single_Formals($1); }
 	     	| formals_list ',' formal 
 			{ $$ = append_Formals($1, single_Formals($3)); }
-
+		;
 
 /* RULE 5 */
 /*
-expr::=  ID<-expr|expr[@TYPE].ID( [expr[[,expr]]∗] )|ID( [expr[[,expr]]∗] )|ifexprthenexprelseexprfi|whileexprloopexprpool| {[[expr; ]]+}|letID : TYPE [<-expr] [[,ID : TYPE [<-expr]]]∗inexpr|caseexprof[[ID : TYPE =>expr; ]]+esac|newTYPE|isvoidexpr|expr+expr|expr−expr|expr∗expr|expr/expr| ̃expr|expr<expr|expr<=expr|expr=expr|notexpr|(expr)|ID|integer|string|true|false
-*/		;
+expr::=  ID<-expr							assignment
+	|expr[@TYPE].ID( [expr[[,expr]]∗] )				constructor of object being called?
+	|ID( [expr[[,expr]]∗] )						constuctor of object being called?
+	|if expr then expr else expr fi					conditional
+	|while expr loop expr pool					while loop
+	| {[[expr; ]]+}							set of expressions separated by semi-colon in curly braces
+	|let ID : TYPE [<-expr] [[,ID : TYPE [<-expr]]]∗in expr		let
+	|case expr of [[ID : TYPE =>expr; ]]+ esac 			switch case
+	|new TYPE							new
+	|isvoid expr							isvoid
+	|expr+expr							addition
+	|expr−expr							subtraction
+	|expr∗expr							multiplication
+	|expr/expr							division
+	|~expr								negate
+	|expr<expr							less than
+	|expr<=expr							less than equal to
+	|expr=expr							equal
+	|not expr							not
+	|(expr)								parenthesis
+	|ID|integer|string|true|false					values
+*/
 exprs_comma	: expr
 	    		{ $$ = single_Expressions($1); }
 		| exprs_comma ',' expr
@@ -246,3 +266,15 @@ expr	: OBJECTID ASSIGN expr
 
 /* end of grammar */
 %%
+/* This function is called automatically when Bison detects a parse error. */
+void yyerror(char *s)
+{
+
+  cerr << "\"" << curr_filename << "\", line " << curr_lineno << ": " \
+    << s << " at or near ";
+  print_cool_token(yychar);
+  cerr << endl;
+  omerrs++;
+
+  if(omerrs>50) {fprintf(stdout, "More than 50 errors\n"); exit(1);}
+}

@@ -1,29 +1,51 @@
-/*Token Names */
-#define CLASS 1
-#define ELSE 2
-#define FI 22
-#define IF 4
-#define IN 5
-#define INHERITS 6
-#define LET 7
-#define LOOP 8
-#define POOL 9
-#define THEN 10
-#define WHILE 11
-#define CASE 12
-#define ESAC 13
-#define OF 14
-#define NEW 15
-#define ISVOID 16
+/*Token Names: Change numbers according to y file? */
+#define CLASS 258
+#define ELSE 259
+#define FI 260
+#define IF 261
+#define IN 262
+#define INHERITS 263
+#define LET 264
+#define LOOP 265
+#define POOL 266
+#define THEN 267
+#define WHILE 268
+#define CASE 269
+#define ESAC 270
+#define OF 271
+#define NEW 273
+#define ISVOID 274
 #define NOT 17
 #define TRUE 18
 #define FALSE 19
 #define TYPEID 20
 #define OBJECTID 21
-#define DARROW 23
+#define DARROW 272 
 #define ASSIGN 24
 #define LE 25
 #define ERROR 26
-#define LET_STMT
+#define LET_STMT 27
+
+/* Parse-tree related */
+
+/* 1.Symbol-table related */
+/*1.1) Structure definitions */
+/* Symbol table will be stored as a linked list(table) of nodes(entry) */
+/*A) entry */
+struct Entry
+{
+	char str[1025]; //value
+	int len; //length of the string without the trailing \0
+	int index; //unique identification
+}entry;
+/*B) Linked list */
+struct Table
+{
+	entry *head;
+	int nentries; //number of entries	
+}table;
+
+
+
 
 
