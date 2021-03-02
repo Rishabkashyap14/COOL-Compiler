@@ -1,4 +1,4 @@
-
+/*Token Names */
 #define CLASS 1
 #define ELSE 2
 #define FI 22
@@ -18,11 +18,12 @@
 #define NOT 17
 #define TRUE 18
 #define FALSE 19
-#define TYPE_ID 20
-#define OBJ_ID 21
+#define TYPEID 20
+#define OBJECTID 21
 #define DARROW 23
 #define ASSIGN 24
 #define LE 25
 #define ERROR 26
 #define LET_STMT
+
 
