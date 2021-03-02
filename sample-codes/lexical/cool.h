@@ -1,3 +1,4 @@
+#include <stdargs.h>
 /*Token Names: Change numbers according to y file? */
 #define CLASS 258
 #define ELSE 259
@@ -32,25 +33,32 @@
 /*1.1) Structure definitions */
 /* Symbol table will be stored as a linked list(table) of nodes(entry) */
 /*A) entry */
-struct Entry
+typedef struct Entry
 {
-	char str[1025]; //value
-	int len; //length of the string without the trailing \0
+	char str[125]; //name
+	char val[1025]; //value
+	int size; 
 	int index; //unique identification
+	int data_type; //0 for bool 1 for int 2 for string 3 for identifier
+	int scope;
+	int declared; //Line of declaration
+	int referred; //Line of reference
+	int use; //0 for parameter, 1 for argument, 2 for return, 3 for method
+	struct Entry *next; 
 }entry;
 /*B) Linked list */
-struct Table
+typedef struct Table
 {
 	entry *head;
 	int nentries; //number of entries	
 }table;
 /*C) Functions */
-entry *create_entry(char *str,int len, int index);//Should index be added to this function? return node or null
-int lookup_entry_by_str(char *str);//return index of entry if found else return -1
-int lookup_entry_by_index(int index);
-entry *insert_entry(entry *node);
-entry *delete_entry(int index);
-void display_table(table *table);
+entry *create_entry(char *str,int data_type,int declared,int use,int scope=0,...);//Should index be added to this function? return node or null
+int lookup_entry_by_str(char *str,table *t);//return index of entry if found else return -1
+int lookup_entry_by_index(int index,table *t);
+table *insert_entry(entry *node,table *t);
+table *delete_entry(int index);
+void display_table(table *t);
 
 
 

@@ -144,8 +144,8 @@ formals_list	: formal
 /* RULE 5 */
 /*
 expr::=  ID<-expr							assignment
-	|expr[@TYPE].ID( [expr[[,expr]]∗] )				constructor of object being called?
-	|ID( [expr[[,expr]]∗] )						constuctor of object being called?
+	|expr[@TYPE].ID( [expr[[,expr]]∗] )				method of object being called optionally from a specific class
+	|ID( [expr[[,expr]]∗] )						creating object
 	|if expr then expr else expr fi					conditional
 	|while expr loop expr pool					while loop
 	| {[[expr; ]]+}							set of expressions separated by semi-colon in curly braces
