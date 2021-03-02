@@ -70,7 +70,34 @@ table *delete_entry(int i)
 	}
 }
 
-void print_cool_token(char *tok)
+void print_cool_token(char *tok) // TO DO
 {
 	
+}
+
+int lookup_entry_by_str(char *str,table *t) //return index of entry if found else return -1
+{
+    if(t->head==NULL)
+        return(-1);
+    entry *curr = t->head;
+    while(curr!=NULL)
+    {
+        if(curr->str == str)
+            return(curr->index);
+        curr=curr->next;
+    }
+    return(-1);
+}
+int lookup_entry_by_index(int index,table *t)
+{
+    if(t->head==NULL)
+        return(-1);
+    entry *curr = t->head;
+    while(curr!=NULL)
+    {
+        if(curr->index == index)
+            return(curr->value);
+        curr=curr->next;
+    }
+    return(-1);
 }
