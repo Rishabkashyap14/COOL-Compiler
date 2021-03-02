@@ -1,20 +1,24 @@
 #include "cool.h"
+#include<stdlib.h>
+#include<errno.h>
 int index=0;
-entry *create_entry(char* str, int data_type, int declared, int use, int scope=0, ...)
+struct Table *t;
+
+entry *create_entry(char* str, int data_type, int declared, int use, int scope, int value)
 {
-	va_list valist;
-	va_start(valist, 6);
-        if((entry* E = (struct entry*)malloc(sizeof(entry))) == NULL)
+		//va_list valist;
+		//va_start(valist, 6);
+        entry* E = (struct entry*)malloc(sizeof(entry));
                 return;
-        if((strcmp(str,"") == 0){
-                perror("Error %d: Cannot insert a null entry\n",errno);
+        if((strcmp(str,"") == 0)){
+                perror("Error: Cannot insert a null entry\n");
                 return;
         }
         else
-                E->str =  str;
+                E->str[0] =  str;
         if(data_type<0 || data_type>(4))
         {
-                perror(Error %d: unknown Data type",errno);
+                perror("Error %d: unknown Data type",errno);
                 return;
         }
         else
@@ -28,10 +32,10 @@ entry *create_entry(char* str, int data_type, int declared, int use, int scope=0
         else
                 E->use = use;
         E->scope = scope;
-        if(valist[arg_count])
-                E->value= valist[arg_count];
-	E->index=index;
-	index++;
+        if(value)
+                E->val[0] = value;
+		E->index=index;
+		index++;
         return E;
 }
 
@@ -49,7 +53,7 @@ table *insert_entry(entry *node, table *t)
 
 table *delete_entry(int i)
 {
-	if(i>nentries)
+	if(i>t->nentries)
 		return t;
 	entry *cur=t->head;
 	entry *prev=NULL;
