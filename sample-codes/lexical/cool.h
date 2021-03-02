@@ -44,6 +44,13 @@ struct Table
 	entry *head;
 	int nentries; //number of entries	
 }table;
+/*C) Functions */
+entry *create_entry(char *str,int len, int index);//Should index be added to this function? return node or null
+int lookup_entry_by_str(char *str);//return index of entry if found else return -1
+int lookup_entry_by_index(int index);
+entry *insert_entry(entry *node);
+entry *delete_entry(int index);
+void display_table(table *table);
 
 
 
