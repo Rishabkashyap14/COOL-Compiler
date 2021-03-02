@@ -27,7 +27,7 @@ if (lex_verbose) { \
 }
 #define LOGT(token) \
 if (lex_verbose) { \
-    printf("Scanned token '%d': %s\n", #token, yytext); \
+    printf("Scanned token '%s': %s\n", #token, yytext); \
 }
 /* Max size of string constants */
 #define MAX_STR_CONST 1025
@@ -35,9 +35,11 @@ if (lex_verbose) { \
 
 
 
+int yylex();
+void yyerror(char* s);
 char string_buf[MAX_STR_CONST]; /* to assemble string constants */
 char *string_buf_ptr;
-extern YYSTYPE yylval;
+//extern YYSTYPE yylval;
 #include <y.tab.h>
 int curr_lineno=1;
 int mcomment_count; /* to handle nested multiline comments */
@@ -89,6 +91,24 @@ NEWLINE			(\n)
 
 %%
 
+%union {
+  _Bool boolean;
+  int symbol;
+  int* program;
+  int* class_;
+  int** classes;
+  int* feature;
+  int** features;
+  int* formal;
+  int** formals;
+  int* case_;
+  int** cases;
+  int* expression;
+  int** expressions;
+  char *error_msg;
+}
+
+
 {CLASS} {
     LOGT(CLASS);
     return CLASS;
@@ -107,6 +127,7 @@ NEWLINE			(\n)
 }
 {IN} {
     LOGT(IN);
+    printf("%s\n",yytext);
     return IN;
 }
 {INHERITS} {
@@ -187,8 +208,8 @@ NEWLINE			(\n)
     BEGIN(INITIAL);
     if (string_buf_ptr < string_buf + MAX_STR_CONST) {
         *string_buf_ptr = '\0';
-        cool_yylval.symbol = stringtable.add_string(string_buf);
-	LOGS(STR_CONST);
+        yylval.symbol = stringtable.add_string(string_buf);
+	LOGS(MAX_STR_CONST);
         return STR_CONST;
     } else {
         yylval.error_msg = "String constant too long";

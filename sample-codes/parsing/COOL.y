@@ -2,58 +2,46 @@
 void yyerror (char *s);
 #include <stdio.h>
 #include <stdlib.h>
-#include <cool.h>
+#include "cool.h"
 
 extern char *curr_filename;	/* Findout where this is */
 int curr_lineno=0;
 table *t;
-extern int yylex();
-Program ast_root;	      /* the result of the parse  */
-Class parse_results;		/*For semantic Analysis */
+int yylex();
+entry* node = NULL;
 int omerrs = 0;               /* number of errors in lexing and parsing */
 %}
 
 /* A union of all the types that can be the result of parsing actions. */
 %union {
-  _Bool boolean;
-  int symbol;
-  int* program;
-  int* class_;
-  int** classes;
-  int* feature;
-  int** features;
-  int* formal;
-  int** formals;
-  int* case_;
-  int** cases;
-  int* expression;
-  int** expressions;
-  char *error_msg;
+	char* sval;
+	int ival;
+	char *error_msg;
 }
 
 /* Types for the non-terminals */
-%type <program> program
-%type <classes> class_list
-%type <class_> class
+%type <sval> program
+%type <sval> class_list
+%type <sval> class
 
-%type <feature> feature
-%type <features> feature_list
+%type <sval> feature
+%type <sval> feature_list
 
-%type <formal> formal
-%type <formals> formals_list
+%type <sval> formal
+%type <sval> formals_list
 
-%type <expression> expr opt_assign let_expr
-%type <expressions> exprs_semi exprs_comma 
+%type <sval> expr opt_assign let_expr
+%type <sval> exprs_semi exprs_comma 
 
-%type <case_> case
-%type <cases> cases
+%type <sval> case
+%type <sval> cases
 
 %token CLASS 258 ELSE 259 FI 260 IF 261 IN 262 
 %token INHERITS 263 LET 264 LOOP 265 POOL 266 THEN 267 WHILE 268
 %token CASE 269 ESAC 270 OF 271 DARROW 272 NEW 273 ISVOID 274
-%token <symbol>  STR_CONST 275 INT_CONST 276 
-%token <boolean> BOOL_CONST 277
-%token <symbol>  TYPEID 278 OBJECTID 279 
+%token <sval>  STR_CONST 275 INT_CONST 276 
+%token <sval> TRUE 277 FALSE 284
+%token <sval>  TYPEID 278 OBJECTID 279 
 %token ASSIGN 280 NOT 281 LE 282 ERROR 283
 
 /*PRECEDENCE
@@ -98,28 +86,28 @@ class_list
 class	: CLASS TYPEID '{' feature_list '}' ';'/*without inherits i.e. from Object Class */
 		{ 
 			curr_lineno++;
-			node=create_entry($2,3,curr_lineno,4,0);
+			node=create_entry($2,3,curr_lineno,4,0,0);
 			t=insert_entry(node,t);		   
 		}
 		/*{  $$ = class_($2,idtable.add_string("Object"),$4,stringtable.add_string(curr_filename)); }*/
 	| CLASS TYPEID '{' '}' ';' /* without inherits or features */
 		{ 
 			curr_lineno++;
-			node=create_entry($2,3,curr_lineno,4,0);
+			node=create_entry($2,3,curr_lineno,4,0,0);
 			t=insert_entry(node,t);		   
 		}
 		/*{  $$ = class_($2,idtable.add_string("Object"),nil_Features(),stringtable.add_string(curr_filename)); }*/ 
 	| CLASS TYPEID INHERITS TYPEID '{' feature_list '}' ';'
 		{ 
 			curr_lineno++;
-			node=create_entry($2,3,curr_lineno,4,0);
+			node=create_entry($2,3,curr_lineno,4,0,0);
 			t=insert_entry(node,t);		   
 		}
 		/*{  $$ = class_($2,$4,$6,stringtable.add_string(curr_filename)); }*/
 	| CLASS TYPEID INHERITS TYPEID '{' '}' ';' /* with inherits but no features */
 		{ 
 			curr_lineno++;
-			node=create_entry($2,3,curr_lineno,4,0);
+			node=create_entry($2,3,curr_lineno,4,0,0);
 			t=insert_entry(node,t);		   
 		}
 		/*
@@ -235,7 +223,7 @@ expr	: OBJECTID ASSIGN expr
 	| OBJECTID '(' ')'
 		{ 
 			curr_lineno++;
-			node=create_entry($1,3,curr_lineno,5,0);
+			node=create_entry($1,3,curr_lineno,5,0,0);
 			t=insert_entry(node,t);		   
 		}
 		/*{ $$ = dispatch(object(idtable.add_string("self")), $1, nil_Expressions()); }*/
@@ -294,7 +282,9 @@ expr	: OBJECTID ASSIGN expr
 		/*{ $$ = string_const($1); }*/
 	| INT_CONST
 		/*{ $$ = int_const($1); }*/
-	| BOOL_CONST
+	| TRUE
+		/*{ $$ = bool_const($1); }*/ 
+	| FALSE
 		/*{ $$ = bool_const($1); }*/ 
 	; 
 
