@@ -37,7 +37,8 @@ if (lex_verbose) { \
 
 char string_buf[MAX_STR_CONST]; /* to assemble string constants */
 char *string_buf_ptr;
-//extern YYSTYPE yylval;
+extern YYSTYPE yylval;
+#include <y.tab.h>
 int curr_lineno=1;
 int mcomment_count; /* to handle nested multiline comments */
 %}

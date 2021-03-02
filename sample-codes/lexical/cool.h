@@ -1,4 +1,4 @@
-#include <stdargs.h>
+#include <stdarg.h>
 /*Token Names: Change numbers according to y file? */
 #define CLASS 258
 #define ELSE 259
@@ -43,7 +43,7 @@ typedef struct Entry
 	int scope;
 	int declared; //Line of declaration
 	int referred; //Line of reference
-	int use; //0 for parameter, 1 for argument, 2 for return, 3 for method
+	int use; //0 for parameter, 1 for argument, 2 for return, 3 for method, 4 for classname, 5 object
 	struct Entry *next; 
 }entry;
 /*B) Linked list */
@@ -57,7 +57,7 @@ entry *create_entry(char *str,int data_type,int declared,int use,int scope=0,...
 int lookup_entry_by_str(char *str,table *t);//return index of entry if found else return -1
 int lookup_entry_by_index(int index,table *t);
 table *insert_entry(entry *node,table *t);
-table *delete_entry(int index);
+table *delete_entry(int i);
 void display_table(table *t);
 
 
