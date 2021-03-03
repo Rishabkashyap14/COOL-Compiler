@@ -1,41 +1,46 @@
 #include "cool.h"
+#include <stdio.h>
+#include <string.h>
 #include<stdlib.h>
 #include<errno.h>
-int index=0;
-struct Table *t;
+int i=0;
+table *t;
+//t->head=NULL;
+//t->nentries=0;
 
-entry *create_entry(char* str, int data_type, int declared, int use, int scope, int value)
+entry *create_entry(char* str, int data_type, int declared, int use, int scope, char *value)
 {
 		//va_list valist;
 		//va_start(valist, 6);
-        entry* E = (struct entry*)malloc(sizeof(entry));
-                return;
+	printf("Creating table entry for %s\n",str);
+        entry* E = (entry*)malloc(sizeof(entry));
+                return NULL;
         if((strcmp(str,"") == 0)){
                 perror("Error: Cannot insert a null entry\n");
-                return;
+                return NULL;
         }
         else
-                E->str[0] =  str;
+                strcpy(E->str,str);
         if(data_type<0 || data_type>(4))
         {
-                perror("Error %d: unknown Data type",errno);
-                return;
+                perror("Error: unknown Data type");
+                return NULL;
         }
         else
                 E->data_type = data_type;
         E->declared = declared;
         if(use<0 || use>3)
         {
-                perror("Error %d: Cannot input %d int table\n",errno, use);
-                return;
+                perror("Error: Cannot input into table\n");
+                return NULL;
         }
         else
                 E->use = use;
         E->scope = scope;
         if(value)
-                E->val[0] = value;
-		E->index=index;
-		index++;
+                strcpy(E->val,value);
+		E->index=i;
+		i++;
         return E;
 }
 
@@ -76,7 +81,7 @@ table *delete_entry(int i)
 
 int lookup_entry_by_str(char *str,table *t)
 {
-	int* p = t->head;
+	entry* p = t->head;
 	while(p != NULL)
 	{
 		if(!(strcmp(p->str,str)))
@@ -87,9 +92,9 @@ int lookup_entry_by_str(char *str,table *t)
 	return 0;
 }
 
-int lookup_entry_by_index(int index,table *t);
+int lookup_entry_by_index(int index,table *t)
 {
-	int* p = t->head;
+	entry* p = t->head;
 	while(p != NULL)
 	{
 		if(p->index == index)
@@ -103,4 +108,14 @@ int lookup_entry_by_index(int index,table *t);
 void print_cool_token(char *tok)
 {
 	
+}
+
+void display_table(table *t)
+{
+	entry *cur=t->head;
+	while(cur!=NULL)
+	{
+		printf("%s\t%d\t%d\t%d\t%d\t%s\n",cur->str,cur->data_type,cur->declared,cur->use,cur->scope,cur->val);
+		cur=cur->next;
+	}
 }

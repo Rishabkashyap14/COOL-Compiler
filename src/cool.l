@@ -10,7 +10,7 @@
 #define MAX_STR_CONST 1025
 #define YY_NO_UNPUT   
 
-struct Table *t;
+extern table *t;
 entry* node = NULL;
 
 int yylex();
@@ -19,7 +19,6 @@ char string_buf[MAX_STR_CONST]; /* to assemble string constants */
 char *string_buf_ptr;
 //YYSTYPE yylval;
 #include "y.tab.h"
-int curr_lineno=1;
 int mcomment_count; /* to handle nested multiline comments */
 %}
 
@@ -67,93 +66,121 @@ NEWLINE			(\n)
 
 
 {CLASS} {
-	strcpy(yylval.sval, yytext);
+	//strcpy(yylval.sval, yytext);
+	yylval.sval=strdup(yytext);
+	printf("%s\n",yytext);
 	return CLASS;
 }
 {ELSE} {
+    printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return ELSE;
 }
 {FI} {
+	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return FI;
 }
 {IF} {
+	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return IF;
 }
 {IN} {
+	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return IN;
 }
 {INHERITS} {
+	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return INHERITS;
 }
 {LET} {
+	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return LET;
 }
 {LOOP} {
-    strcpy(yylval.sval, yytext);
+	printf("%s\n",yytext);
+	yylval.sval=strdup(yytext);
+    //strcpy(yylval.sval, yytext);
     return LOOP;
 }
 {POOL} {
+	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return POOL;
 }
 {THEN} {
-    strcpy(yylval.sval, yytext);
+	printf("%s\n",yytext);
+	yylval.sval=strdup(yytext);
+    //strcpy(yylval.sval, yytext);
     return THEN;
 }
 {WHILE} {
-    strcpy(yylval.sval, yytext);
+	printf("%s\n",yytext);
+	yylval.sval=strdup(yytext);
+    //strcpy(yylval.sval, yytext);
     return WHILE;
 }
 {CASE} {
+	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return CASE;
 }
 {ESAC} {
+	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return ESAC;
 }
 {OF} {
-    strcpy(yylval.sval, yytext);
+	printf("%s\n",yytext);
+	yylval.sval=strdup(yytext);
+    //strcpy(yylval.sval, yytext);
     return OF;
 }
 {NEW} {
+	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return NEW;
 }
 {ISVOID} {
+	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return ISVOID;
 }
 {NOT} {
-    strcpy(yylval.sval, yytext);
+	printf("%s\n",yytext);
+	yylval.sval=strdup(yytext);
+    //strcpy(yylval.sval, yytext);
     return NOT;
 }
 
 {TRUE} {
+printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return TRUE;
 }
 
 {FALSE} {
+printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return FALSE;
 }
 		 
 {TYPE_ID} {
+printf("%s\n",yytext);
 	strcpy(yylval.sval, yytext);
-	node=create_entry(yytext,3,yylineno,4,0,0);
+	node=create_entry(yytext,3,yylineno,4,0,"0");
 	t=insert_entry(node,t);
     return TYPEID;
 }
 {OBJ_ID} {
-    strcpy(yylval.sval, yytext);
-	node=create_entry(yytext,3,yylineno,5,0,0);
+	printf("%s\n",yytext);
+	yylval.sval=strdup(yytext);
+    	//strcpy(yylval.sval, yytext);
+	node=create_entry(yytext,3,yylineno,5,0,"0");
 	t=insert_entry(node,t);
     return OBJECTID;
 }
@@ -162,6 +189,7 @@ NEWLINE			(\n)
     string_buf_ptr = string_buf;
 }
 <STRING>{DQUOTE} {
+printf("%s\n",yytext);
     BEGIN(INITIAL);
     if (string_buf_ptr < string_buf + MAX_STR_CONST) {
         *string_buf_ptr = '\0';
@@ -172,22 +200,25 @@ NEWLINE			(\n)
     }
 }
 <STRING>{ESCAPE} {
+printf("%s\n",yytext);
     BEGIN(ESCAPE);
 }
 <STRING>{NULL} {
+printf("%s\n",yytext);
     yylval.error_msg = "String contains null character";
     return ERROR;
 }
 <STRING><<EOF>> {
+printf("%s\n",yytext);
     yylval.error_msg = "EOF in string constant";
     return 0;
 }
 <STRING>{NEWLINE} {
     yylval.error_msg = "Unterminated string constant";
-    curr_lineno++;
     return ERROR;
 }
 <ESCAPE>. {
+printf("%s\n",yytext);
     char c = yytext[0];
     if (c == 't') {
         c = '\t';
@@ -204,10 +235,10 @@ NEWLINE			(\n)
     BEGIN(STRING);
 }
 <ESCAPE>{NEWLINE} {
-    curr_lineno++;
     BEGIN(STRING);
 }
 <STRING>{STRING} {
+	printf("%s\n",yytext);
     int remaining_size = MAX_STR_CONST - (string_buf_ptr - string_buf) - 1;
     int to_copy = yyleng > remaining_size ? remaining_size : yyleng;
     strcpy(string_buf_ptr, yytext);
@@ -215,6 +246,7 @@ NEWLINE			(\n)
 }
     
 {INTEGER} {
+printf("%s\n",yytext);
     yylval.ival = atoi(yytext);
     return INT_CONST;
 }
@@ -222,21 +254,25 @@ NEWLINE			(\n)
     return DARROW;
 }
 {PUNCTUATION} {
+printf("%s\n",yytext);
     return yytext[0];
 }
 {LE} {
+printf("%s\n",yytext);
     return LE;
 }
 {ASSIGN} {
+printf("%s\n",yytext);
     return ASSIGN;
 }
 {WHITESPACE} {}
 
 . {
+printf("%s\n",yytext);
     yylval.error_msg = "Unexpected character";
     return ERROR;
 }
 
 %%
 
-yywrap() { return 1;}
+int yywrap() { return 1;}

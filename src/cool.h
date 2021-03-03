@@ -55,7 +55,8 @@ typedef struct Table
 }table;
 
 /*C) Functions */
-entry *create_entry(char *str,int data_type,int declared,int use, int scope, int value);//Should index be added to this function? return node or null
+table *create_table(void);
+entry *create_entry(char *str,int data_type,int declared,int use, int scope, char *value);//Should index be added to this function? return node or null
 int lookup_entry_by_str(char *str,table *t);//return index of entry if found else return -1
 int lookup_entry_by_index(int index,table *t);
 table *insert_entry(entry *node,table *t);
