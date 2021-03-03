@@ -17,7 +17,6 @@ int yylex();
 void yyerror(char* s);
 char string_buf[MAX_STR_CONST]; /* to assemble string constants */
 char *string_buf_ptr;
-//YYSTYPE yylval;
 #include "y.tab.h"
 int mcomment_count; /* to handle nested multiline comments */
 %}
@@ -66,7 +65,6 @@ NEWLINE			(\n)
 
 
 {CLASS} {
-	//strcpy(yylval.sval, yytext);
 	yylval.sval=strdup(yytext);
 	printf("%s\n",yytext);
 	return CLASS;
@@ -104,7 +102,6 @@ NEWLINE			(\n)
 {LOOP} {
 	printf("%s\n",yytext);
 	yylval.sval=strdup(yytext);
-    //strcpy(yylval.sval, yytext);
     return LOOP;
 }
 {POOL} {
@@ -115,13 +112,11 @@ NEWLINE			(\n)
 {THEN} {
 	printf("%s\n",yytext);
 	yylval.sval=strdup(yytext);
-    //strcpy(yylval.sval, yytext);
     return THEN;
 }
 {WHILE} {
 	printf("%s\n",yytext);
 	yylval.sval=strdup(yytext);
-    //strcpy(yylval.sval, yytext);
     return WHILE;
 }
 {CASE} {
@@ -137,7 +132,6 @@ NEWLINE			(\n)
 {OF} {
 	printf("%s\n",yytext);
 	yylval.sval=strdup(yytext);
-    //strcpy(yylval.sval, yytext);
     return OF;
 }
 {NEW} {
@@ -153,7 +147,6 @@ NEWLINE			(\n)
 {NOT} {
 	printf("%s\n",yytext);
 	yylval.sval=strdup(yytext);
-    //strcpy(yylval.sval, yytext);
     return NOT;
 }
 
@@ -170,18 +163,25 @@ printf("%s\n",yytext);
 }
 		 
 {TYPE_ID} {
-printf("%s\n",yytext);
+	printf("%s\n",yytext);
 	strcpy(yylval.sval, yytext);
-	node=create_entry(yytext,3,yylineno,4,0,"0");
-	t=insert_entry(node,t);
+	if(!lookup_entry_by_str(yytext, t))
+	{
+		node=create_entry(yytext,3,yylineno,4,0,"0");
+		t=insert_entry(node,t);
+		printf("inserted\n");
+    }
     return TYPEID;
 }
 {OBJ_ID} {
 	printf("%s\n",yytext);
 	yylval.sval=strdup(yytext);
-    	//strcpy(yylval.sval, yytext);
-	node=create_entry(yytext,3,yylineno,5,0,"0");
-	t=insert_entry(node,t);
+    if(!lookup_entry_by_str(yytext, t))
+    {
+		node=create_entry(yytext,3,yylineno,5,0,"0");
+		t=insert_entry(node,t);
+		printf("inserted\n");
+	}
     return OBJECTID;
 }
 {DQUOTE} {
@@ -266,6 +266,12 @@ printf("%s\n",yytext);
     return ASSIGN;
 }
 {WHITESPACE} {}
+
+{COMMENT_M}
+{
+	printf("comment: %s\n",yytext);
+	
+}
 
 . {
 printf("%s\n",yytext);

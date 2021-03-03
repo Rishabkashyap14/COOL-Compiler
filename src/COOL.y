@@ -6,7 +6,7 @@ void yyerror (char *s);
 
 extern FILE *yyin;	/* Findout where this is */
 int curr_lineno=0;
-extern table *t;
+table *t;
 int yylex();
 extern entry* node;
 int omerrs = 0;               /* number of errors in lexing and parsing */
@@ -82,26 +82,26 @@ class_list
 class	: CLASS TYPEID '{' feature_list '}' ';'/*without inherits i.e. from Object Class */
 		{ 
 			curr_lineno++;
-			node=create_entry($2,3,curr_lineno,4,0,"0");
-			t=insert_entry(node,t);		   
+			//node=create_entry($2,3,curr_lineno,4,0,"0");
+			//t=insert_entry(node,t);		   
 		}
 	| CLASS TYPEID '{' '}' ';' /* without inherits or features */
 		{ 
 			curr_lineno++;
-			node=create_entry($2,3,curr_lineno,4,0,"0");
-			t=insert_entry(node,t);		   
+			//node=create_entry($2,3,curr_lineno,4,0,"0");
+			//t=insert_entry(node,t);		   
 		}
 	| CLASS TYPEID INHERITS TYPEID '{' feature_list '}' ';'
 		{ 
 			curr_lineno++;
-			node=create_entry($2,3,curr_lineno,4,0,"0");
-			t=insert_entry(node,t);		   
+			//node=create_entry($2,3,curr_lineno,4,0,"0");
+			//t=insert_entry(node,t);		   
 		}
 	| CLASS TYPEID INHERITS TYPEID '{' '}' ';' /* with inherits but no features */
 		{ 
 			curr_lineno++;
-			node=create_entry($2,3,curr_lineno,4,0,"0");
-			t=insert_entry(node,t);		   
+			//node=create_entry($2,3,curr_lineno,4,0,"0");
+			//t=insert_entry(node,t);		   
 		}	;
 
 /* feature list formulation */
@@ -117,7 +117,6 @@ feature_list	: feature ';'	/*single feature */
 feature	: OBJECTID '(' formals_list ')' ':' TYPEID '{' expr '}' /* For a method(i) */
 	| OBJECTID '(' formals_list ')' ':' TYPEID '{' '}'	/* no expression */
 	| OBJECTID '(' ')' ':' TYPEID '{' '}'			/* no formal parameters and expressions*/
-		/*{ $$ = method($1, nil_Formals(), $5, no_expr()); }*/ 
 	| OBJECTID '(' ')' ':' TYPEID '{' expr '}'		/* no formal parameters */
 	| OBJECTID ':' TYPEID opt_assign			/* For an attribute(ii) */
 	;
@@ -238,6 +237,7 @@ void yyerror(char *s)
 }
 int main(int argc, char **argv)
 {	
+	t = initialize();
 	printf("Inside main\n");
 	FILE * fp= fopen(argv[1], "r");
 	yyin = fp;
@@ -245,7 +245,7 @@ int main(int argc, char **argv)
 	printf("Performing Lexical analysis......\n\n");
 	yyparse ( );
 	printf("\n\033[0;32mParsing completed.\033[0m\n\n");
-	printf("Symbol Table after Lexical Analysis: \n");
+	printf("Symbol Table:\n");
 	display_table(t);
 	return 0;
 }

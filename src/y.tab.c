@@ -71,7 +71,7 @@ void yyerror (char *s);
 
 extern FILE *yyin;	/* Findout where this is */
 int curr_lineno=0;
-extern table *t;
+table *t;
 int yylex();
 extern entry* node;
 int omerrs = 0;               /* number of errors in lexing and parsing */
@@ -500,15 +500,15 @@ static const yytype_uint8 yytranslate[] =
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint16 yyrline[] =
+static const yytype_uint8 yyrline[] =
 {
-       0,    68,    68,    72,    74,    76,    78,    86,    93,   100,
-     107,   119,   121,   123,   125,   132,   134,   136,   138,   140,
-     146,   150,   152,   180,   182,   186,   188,   192,   196,   198,
-     202,   204,   208,   211,   213,   217,   219,   221,   223,   230,
-     237,   239,   241,   243,   245,   247,   249,   251,   253,   255,
-     257,   259,   261,   263,   265,   267,   269,   271,   273,   275,
-     277,   279,   281,   283,   285,   287
+       0,    68,    68,    72,    73,    74,    75,    82,    88,    94,
+     100,   108,   109,   110,   111,   117,   118,   119,   120,   121,
+     126,   129,   130,   157,   158,   161,   162,   165,   168,   169,
+     172,   173,   176,   178,   179,   182,   183,   184,   185,   191,
+     197,   198,   199,   200,   201,   202,   203,   204,   205,   206,
+     207,   208,   209,   210,   211,   212,   213,   214,   215,   216,
+     217,   218,   219,   220,   221,   222
 };
 #endif
 
@@ -1443,47 +1443,47 @@ yyreduce:
   switch (yyn)
     {
         case 7:
-#line 87 "COOL.y" /* yacc.c:1646  */
+#line 83 "COOL.y" /* yacc.c:1646  */
     { 
 			curr_lineno++;
-			node=create_entry((yyvsp[-4].sval),3,curr_lineno,4,0,"0");
-			t=insert_entry(node,t);		   
+			//node=create_entry($2,3,curr_lineno,4,0,"0");
+			//t=insert_entry(node,t);		   
 		}
 #line 1453 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 94 "COOL.y" /* yacc.c:1646  */
+#line 89 "COOL.y" /* yacc.c:1646  */
     { 
 			curr_lineno++;
-			node=create_entry((yyvsp[-3].sval),3,curr_lineno,4,0,"0");
-			t=insert_entry(node,t);		   
+			//node=create_entry($2,3,curr_lineno,4,0,"0");
+			//t=insert_entry(node,t);		   
 		}
 #line 1463 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 101 "COOL.y" /* yacc.c:1646  */
+#line 95 "COOL.y" /* yacc.c:1646  */
     { 
 			curr_lineno++;
-			node=create_entry((yyvsp[-6].sval),3,curr_lineno,4,0,"0");
-			t=insert_entry(node,t);		   
+			//node=create_entry($2,3,curr_lineno,4,0,"0");
+			//t=insert_entry(node,t);		   
 		}
 #line 1473 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 108 "COOL.y" /* yacc.c:1646  */
+#line 101 "COOL.y" /* yacc.c:1646  */
     { 
 			curr_lineno++;
-			node=create_entry((yyvsp[-5].sval),3,curr_lineno,4,0,"0");
-			t=insert_entry(node,t);		   
+			//node=create_entry($2,3,curr_lineno,4,0,"0");
+			//t=insert_entry(node,t);		   
 		}
 #line 1483 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 224 "COOL.y" /* yacc.c:1646  */
+#line 186 "COOL.y" /* yacc.c:1646  */
     { 
 			curr_lineno++;
 			node=create_entry((yyvsp[-2].sval),3,curr_lineno,5,0,"0");
@@ -1493,7 +1493,7 @@ yyreduce:
     break;
 
   case 39:
-#line 231 "COOL.y" /* yacc.c:1646  */
+#line 192 "COOL.y" /* yacc.c:1646  */
     { 
 			curr_lineno++;
 			node=create_entry((yyvsp[-3].sval),3,curr_lineno,5,0,(yyvsp[-1].sval));
@@ -1731,23 +1731,22 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 292 "COOL.y" /* yacc.c:1906  */
+#line 226 "COOL.y" /* yacc.c:1906  */
 
-/* This function is called automatically when Bison detects a parse error. */
+
 void yyerror(char *s)
 {
-
-  /*cerr << "\"" << curr_filename << "\", line " << curr_lineno << ": " \
-    << s << " at or near ";
-  print_cool_token(yychar);
-  cerr << endl;*/
- fprintf(stderr,"line %d: %s\n",curr_lineno,s);
-  omerrs++;
-
-  if(omerrs>50) {fprintf(stdout, "More than 50 errors\n"); exit(1);}
+	fprintf(stderr,"line %d: %s\n",curr_lineno,s);
+	omerrs++;
+	if(omerrs>50) 
+ 	{
+ 		fprintf(stdout, "More than 50 errors\n"); 
+ 		exit(1);
+ 	}
 }
 int main(int argc, char **argv)
 {	
+	t = initialize();
 	printf("Inside main\n");
 	FILE * fp= fopen(argv[1], "r");
 	yyin = fp;
@@ -1755,7 +1754,7 @@ int main(int argc, char **argv)
 	printf("Performing Lexical analysis......\n\n");
 	yyparse ( );
 	printf("\n\033[0;32mParsing completed.\033[0m\n\n");
-	printf("Symbol Table after Lexical Analysis: \n");
+	printf("Symbol Table:\n");
 	display_table(t);
 	return 0;
 }
