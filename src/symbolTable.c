@@ -10,9 +10,7 @@ table *t;
 
 entry *create_entry(char* str, int data_type, int declared, int use, int scope, char *value)
 {
-		//va_list valist;
-		//va_start(valist, 6);
-	printf("Creating table entry for %s\n",str);
+		printf("Creating table entry for %s\n",str);
         entry* E = (entry*)malloc(sizeof(entry));
                 return NULL;
         if((strcmp(str,"") == 0)){
@@ -49,11 +47,20 @@ table *insert_entry(entry *node, table *t)
 	if(node==NULL)
 		return t;
 	entry *cur=t->head;
-	while(cur->next!=NULL)
-		cur=cur->next;
-	cur->next=node;
-	t->nentries++;
-	return t;
+	if(t->head == NULL)
+	{
+		t->head = node;
+		node->next = NULL;
+		return t;
+	}
+	else
+	{
+		while(cur->next!=NULL)
+			cur=cur->next;
+		cur->next=node;
+		t->nentries++;
+		return t;
+	}
 }
 
 table *delete_entry(int i)

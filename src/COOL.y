@@ -228,10 +228,13 @@ expr	: OBJECTID ASSIGN expr
 
 void yyerror(char *s)
 {
- fprintf(stderr,"line %d: %s\n",curr_lineno,s);
-  omerrs++;
-
-  if(omerrs>50) {fprintf(stdout, "More than 50 errors\n"); exit(1);}
+	fprintf(stderr,"line %d: %s\n",curr_lineno,s);
+	omerrs++;
+	if(omerrs>50) 
+ 	{
+ 		fprintf(stdout, "More than 50 errors\n"); 
+ 		exit(1);
+ 	}
 }
 int main(int argc, char **argv)
 {	
