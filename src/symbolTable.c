@@ -74,6 +74,32 @@ table *delete_entry(int i)
 	}
 }
 
+int lookup_entry_by_str(char *str,table *t)
+{
+	int* p = t->head;
+	while(p != NULL)
+	{
+		if(!(strcmp(p->str,str)))
+			return 1;
+		else
+			p = p->next;
+	}
+	return 0;
+}
+
+int lookup_entry_by_index(int index,table *t);
+{
+	int* p = t->head;
+	while(p != NULL)
+	{
+		if(p->index == index)
+			return 1;
+		else
+			p = p->next;
+	}
+	return 0;
+}
+
 void print_cool_token(char *tok)
 {
 	
