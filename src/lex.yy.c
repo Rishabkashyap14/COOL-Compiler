@@ -604,12 +604,11 @@ int yylex();
 void yyerror(char* s);
 char string_buf[MAX_STR_CONST]; /* to assemble string constants */
 char *string_buf_ptr;
-//YYSTYPE yylval;
 #include "y.tab.h"
 int mcomment_count; /* to handle nested multiline comments */
-#line 611 "lex.yy.c"
+#line 610 "lex.yy.c"
 
-#line 613 "lex.yy.c"
+#line 612 "lex.yy.c"
 
 #define INITIAL 0
 #define COMMENT_M 1
@@ -829,11 +828,11 @@ YY_DECL
 		}
 
 	{
-#line 65 "cool.l"
+#line 64 "cool.l"
 
 
 
-#line 837 "lex.yy.c"
+#line 836 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -892,9 +891,8 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 68 "cool.l"
+#line 67 "cool.l"
 {
-	//strcpy(yylval.sval, yytext);
 	yylval.sval=strdup(yytext);
 	printf("%s\n",yytext);
 	return CLASS;
@@ -902,7 +900,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 74 "cool.l"
+#line 72 "cool.l"
 {
     printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
@@ -911,7 +909,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 79 "cool.l"
+#line 77 "cool.l"
 {
 	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
@@ -920,7 +918,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 84 "cool.l"
+#line 82 "cool.l"
 {
 	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
@@ -929,7 +927,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 89 "cool.l"
+#line 87 "cool.l"
 {
 	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
@@ -938,7 +936,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 94 "cool.l"
+#line 92 "cool.l"
 {
 	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
@@ -947,7 +945,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 99 "cool.l"
+#line 97 "cool.l"
 {
 	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
@@ -956,17 +954,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 104 "cool.l"
+#line 102 "cool.l"
 {
 	printf("%s\n",yytext);
 	yylval.sval=strdup(yytext);
-    //strcpy(yylval.sval, yytext);
     return LOOP;
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 110 "cool.l"
+#line 107 "cool.l"
 {
 	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
@@ -975,27 +972,25 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 115 "cool.l"
+#line 112 "cool.l"
 {
 	printf("%s\n",yytext);
 	yylval.sval=strdup(yytext);
-    //strcpy(yylval.sval, yytext);
     return THEN;
 }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 121 "cool.l"
+#line 117 "cool.l"
 {
 	printf("%s\n",yytext);
 	yylval.sval=strdup(yytext);
-    //strcpy(yylval.sval, yytext);
     return WHILE;
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 127 "cool.l"
+#line 122 "cool.l"
 {
 	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
@@ -1004,7 +999,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 132 "cool.l"
+#line 127 "cool.l"
 {
 	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
@@ -1013,17 +1008,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 137 "cool.l"
+#line 132 "cool.l"
 {
 	printf("%s\n",yytext);
 	yylval.sval=strdup(yytext);
-    //strcpy(yylval.sval, yytext);
     return OF;
 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 143 "cool.l"
+#line 137 "cool.l"
 {
 	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
@@ -1032,7 +1026,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 148 "cool.l"
+#line 142 "cool.l"
 {
 	printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
@@ -1041,17 +1035,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 153 "cool.l"
+#line 147 "cool.l"
 {
 	printf("%s\n",yytext);
 	yylval.sval=strdup(yytext);
-    //strcpy(yylval.sval, yytext);
     return NOT;
 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 160 "cool.l"
+#line 153 "cool.l"
 {
 printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
@@ -1060,7 +1053,7 @@ printf("%s\n",yytext);
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 166 "cool.l"
+#line 159 "cool.l"
 {
 printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
@@ -1069,7 +1062,7 @@ printf("%s\n",yytext);
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 172 "cool.l"
+#line 165 "cool.l"
 {
 	printf("%s\n",yytext);
 	strcpy(yylval.sval, yytext);
@@ -1084,11 +1077,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 183 "cool.l"
+#line 176 "cool.l"
 {
 	printf("%s\n",yytext);
 	yylval.sval=strdup(yytext);
-    	//strcpy(yylval.sval, yytext);
     if(!lookup_entry_by_str(yytext, t))
     {
 		node=create_entry(yytext,3,yylineno,5,0,"0");
@@ -1100,7 +1092,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 195 "cool.l"
+#line 187 "cool.l"
 {
     BEGIN(STRING);
     string_buf_ptr = string_buf;
@@ -1108,7 +1100,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 199 "cool.l"
+#line 191 "cool.l"
 {
 printf("%s\n",yytext);
     BEGIN(INITIAL);
@@ -1123,7 +1115,7 @@ printf("%s\n",yytext);
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 210 "cool.l"
+#line 202 "cool.l"
 {
 printf("%s\n",yytext);
     BEGIN(ESCAPE);
@@ -1131,7 +1123,7 @@ printf("%s\n",yytext);
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 214 "cool.l"
+#line 206 "cool.l"
 {
 printf("%s\n",yytext);
     yylval.error_msg = "String contains null character";
@@ -1139,7 +1131,7 @@ printf("%s\n",yytext);
 }
 	YY_BREAK
 case YY_STATE_EOF(STRING):
-#line 219 "cool.l"
+#line 211 "cool.l"
 {
 printf("%s\n",yytext);
     yylval.error_msg = "EOF in string constant";
@@ -1149,7 +1141,7 @@ printf("%s\n",yytext);
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-#line 224 "cool.l"
+#line 216 "cool.l"
 {
     yylval.error_msg = "Unterminated string constant";
     return ERROR;
@@ -1157,7 +1149,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 228 "cool.l"
+#line 220 "cool.l"
 {
 printf("%s\n",yytext);
     char c = yytext[0];
@@ -1179,14 +1171,14 @@ printf("%s\n",yytext);
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 245 "cool.l"
+#line 237 "cool.l"
 {
     BEGIN(STRING);
 }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 248 "cool.l"
+#line 240 "cool.l"
 {
 	printf("%s\n",yytext);
     int remaining_size = MAX_STR_CONST - (string_buf_ptr - string_buf) - 1;
@@ -1197,7 +1189,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 256 "cool.l"
+#line 248 "cool.l"
 {
 printf("%s\n",yytext);
     yylval.ival = atoi(yytext);
@@ -1206,14 +1198,14 @@ printf("%s\n",yytext);
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 261 "cool.l"
+#line 253 "cool.l"
 {
     return DARROW;
 }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 264 "cool.l"
+#line 256 "cool.l"
 {
 printf("%s\n",yytext);
     return yytext[0];
@@ -1221,7 +1213,7 @@ printf("%s\n",yytext);
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 268 "cool.l"
+#line 260 "cool.l"
 {
 printf("%s\n",yytext);
     return LE;
@@ -1229,7 +1221,7 @@ printf("%s\n",yytext);
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 272 "cool.l"
+#line 264 "cool.l"
 {
 printf("%s\n",yytext);
     return ASSIGN;
@@ -1237,25 +1229,25 @@ printf("%s\n",yytext);
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 276 "cool.l"
+#line 268 "cool.l"
 {}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 278 "cool.l"
+#line 270 "cool.l"
 
 	YY_BREAK
 
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
-#line 280 "cool.l"
+#line 272 "cool.l"
 
 	YY_BREAK
 
 case 38:
 YY_RULE_SETUP
-#line 284 "cool.l"
+#line 276 "cool.l"
 {
 printf("%s\n",yytext);
     yylval.error_msg = "Unexpected character";
@@ -1264,10 +1256,10 @@ printf("%s\n",yytext);
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 290 "cool.l"
+#line 282 "cool.l"
 ECHO;
 	YY_BREAK
-#line 1271 "lex.yy.c"
+#line 1263 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT_M):
 case YY_STATE_EOF(ESCAPE):
@@ -2274,7 +2266,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 290 "cool.l"
+#line 282 "cool.l"
 
 
 int yywrap() { return 1;}

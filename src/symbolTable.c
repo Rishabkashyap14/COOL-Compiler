@@ -114,11 +114,6 @@ int lookup_entry_by_index(int index,table *t)
 	return 0;
 }
 
-void print_cool_token(char *tok)
-{
-	
-}
-
 void display_table(table *t)
 {
 	entry *cur=t->head;

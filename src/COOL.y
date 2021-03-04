@@ -227,7 +227,7 @@ expr	: OBJECTID ASSIGN expr
 
 void yyerror(char *s)
 {
-	fprintf(stderr,"line %d: %s\n",curr_lineno,s);
+	fprintf(stderr,"%s\n",s);
 	omerrs++;
 	if(omerrs>50) 
  	{
