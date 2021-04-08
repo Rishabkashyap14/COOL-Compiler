@@ -180,46 +180,87 @@ let_expr	: OBJECTID ':' TYPEID opt_assign IN expr
 		;
 
 expr	: OBJECTID ASSIGN expr
+	{$$=opr($2,2,$1,$3);}
 	| expr '@' TYPEID '.' OBJECTID '(' ')'
+	{	/*operator identified by @*/
+		$$=opr($2,3,$1,$3,$5);
+	}
 	| expr '@' TYPEID '.' OBJECTID '(' exprs_comma ')'
+	{
+		/*operator identified by (*/
+		$$=opr($6,4,$1,$3,$5,$7);
+	}
 	| OBJECTID '(' ')'
 		{ 
 			curr_lineno++;
 			node=create_entry($1,3,curr_lineno,5,0,"0");
-			t=insert_entry(node,t);		   
+			t=insert_entry(node,t);	
+			/* operator identified by ' ' */
+			$$=opr(' ',1,$1);	   
 		}
 	| OBJECTID '(' exprs_comma ')'
 		{ 
 			curr_lineno++;
 			node=create_entry($1,3,curr_lineno,5,0,$3);
-			t=insert_entry(node,t);		   
+			t=insert_entry(node,t);
+			/* operator identified by ')' */
+			$$=opr($4,2,$1,$3);		   
 		}
 	| expr '.' OBJECTID '(' ')'
+	{$$=opr($2,2,$1,$3);}
 	| expr '.' OBJECTID '(' exprs_comma ')'
+	{
+		/*operator identified by a */
+		$$=opr('a',3,$1,$3,$5);
+	}
 	| IF expr THEN expr ELSE expr FI
+	{$$ = opr(IF, 3, $2, $4, $6);}
 	| WHILE expr LOOP expr POOL
+	{$$ = opr(WHILE, 2, $2, $4);}
 	| '{' exprs_semi '}'
+	{$$ = $2;}
 	| '{' '}'
 	| '{' error '}'
 	| LET let_expr 
+	{}
 	| CASE expr OF cases ESAC
+	{
+		
+	}
 	| NEW TYPEID
+	{/*To be handled*/}
 	| ISVOID expr
+	{$$=opr($1,1,$2);}
 	| expr '+' expr
+	{$$=opr($2,2,$1,$3);}
 	| expr '-' expr
+	{$$=opr($2,2,$1,$3);}
 	| expr '*' expr 
-	| expr '/' expr 
+	{$$=opr($2,2,$1,$3);}
+	| expr '/' expr
+	{$$=opr($2,2,$1,$3);} 
 	| '~' expr
+	{$$=opr($1,1,$2);}
 	| expr '<' expr
+	{$$=opr($2,2,$1,$3);}
 	| expr LE expr
+	{$$=opr($2,2,$1,$3);}
 	| expr '=' expr
+	{$$=opr($2,2,$1,$3);}
 	| NOT expr
+	{$$=$2;}
 	| '(' expr ')'
+	{$$=$2;}
 	| OBJECTID 
+	{$$=identifier($<sval>1);}
 	| STR_CONST
+	{$$=str_constant($<sval>1);}
 	| INT_CONST
+	{$$=integer_constant($<ival>1);}
 	| TRUE
+	{$$=bool_constant($<sval>1);}
 	| FALSE
+	{$$=bool_constant($<sval>1);}
 	; 
 
 
