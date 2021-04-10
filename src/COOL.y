@@ -65,13 +65,15 @@ and the three comparison operations, which do not associate. */
 /* RULE 1 */
 /* program:=[class;]+ */
 /* Program gives a list of classes */
-program	: class_list	/*{ ast_root = program($1); parse_results = $1; }*/
+program	: class_list	{exit(0);}
         ;
 /*class list may be: */
 class_list
 	: class			/* single class */
+	{$$=$1;}
 	| error ';'
 	| class_list class	/* several classes */
+	{$$ = $2;}
 	| class_list error ';'
 	;
 
@@ -83,31 +85,37 @@ class	: CLASS TYPEID '{' feature_list '}' ';'/*without inherits i.e. from Object
 		{ 
 			curr_lineno++;
 			//node=create_entry($2,3,curr_lineno,4,0,"0");
-			//t=insert_entry(node,t);		   
+			//t=insert_entry(node,t);	
+			$$=$1;	   
 		}
 	| CLASS TYPEID '{' '}' ';' /* without inherits or features */
 		{ 
 			curr_lineno++;
 			//node=create_entry($2,3,curr_lineno,4,0,"0");
-			//t=insert_entry(node,t);		   
+			//t=insert_entry(node,t);
+			$$=$1;		   
 		}
 	| CLASS TYPEID INHERITS TYPEID '{' feature_list '}' ';'
 		{ 
 			curr_lineno++;
 			//node=create_entry($2,3,curr_lineno,4,0,"0");
-			//t=insert_entry(node,t);		   
+			//t=insert_entry(node,t);
+			$$=$4;		   
 		}
 	| CLASS TYPEID INHERITS TYPEID '{' '}' ';' /* with inherits but no features */
 		{ 
 			curr_lineno++;
 			//node=create_entry($2,3,curr_lineno,4,0,"0");
-			//t=insert_entry(node,t);		   
-		}	;
+			//t=insert_entry(node,t);
+			$$=$4;		   
+		}	
 
 /* feature list formulation */
 feature_list	: feature ';'	/*single feature */
+		{$$=$1;}
 		| error ';'	/*no features */
 		| feature_list feature ';'	/*several features */
+		{$$=$2;}
 		| feature_list error ';'
 		;
 
@@ -115,6 +123,7 @@ feature_list	: feature ';'	/*single feature */
 /* feature::= ID([formal[,formal]*]):TYPE{expr}	..(i)
 	|	ID:TYPE[<-expr]			..(ii) */
 feature	: OBJECTID '(' formals_list ')' ':' TYPEID '{' expr '}' /* For a method(i) */
+	{$$=ex();}
 	| OBJECTID '(' formals_list ')' ':' TYPEID '{' '}'	/* no expression */
 	| OBJECTID '(' ')' ':' TYPEID '{' '}'			/* no formal parameters and expressions*/
 	| OBJECTID '(' ')' ':' TYPEID '{' expr '}'		/* no formal parameters */
@@ -177,6 +186,7 @@ let_expr	: OBJECTID ':' TYPEID opt_assign IN expr
 	 		%prec LET
 		| OBJECTID ':' TYPEID opt_assign ',' let_expr
 		| error ',' let_expr
+		{$$=$3}
 		;
 
 expr	: OBJECTID ASSIGN expr
@@ -222,11 +232,9 @@ expr	: OBJECTID ASSIGN expr
 	| '{' '}'
 	| '{' error '}'
 	| LET let_expr 
-	{}
+	{$$=$1;}
 	| CASE expr OF cases ESAC
-	{
-		
-	}
+	{$$=opr(CASE,2,$2,$4);}
 	| NEW TYPEID
 	{/*To be handled*/}
 	| ISVOID expr
