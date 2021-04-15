@@ -66,7 +66,8 @@ and the three comparison operations, which do not associate. */
 /* RULE 1 */
 /* program:=[class;]+ */
 /* Program gives a list of classes */
-program	: class_list	{exit(0);}
+program	: class_list
+	{}
         ;
 /*class list may be: */
 class_list
@@ -201,9 +202,9 @@ opt_assign	:
 
 let_expr	: OBJECTID ':' TYPEID opt_assign IN expr 
 	 		%prec LET
-		{$$ = opr(IN, 4, $1, $3,$4,$<sval>5);}
+		{$$ = opr(IN, 3, $1,$4,$<sval>5);}
 		| OBJECTID ':' TYPEID opt_assign ',' let_expr
-		{$$ = opr(LET, 4, $1, $3,$4,$<sval>5);}
+		{$$ = opr(LET, 3, $1,$4,$<sval>5);}
 		| error ',' let_expr
 		{$$=$3;}
 		;
@@ -217,7 +218,7 @@ expr	: OBJECTID ASSIGN expr
 	| expr '@' TYPEID '.' OBJECTID '(' exprs_comma ')'
 	{
 		/*operator identified by (*/
-		$$=opr($<ival>6,4,$1,$3,$5,$7);
+		$$=opr($<ival>6,3,$1,$5,$7);
 	}
 	| OBJECTID '(' ')'
 		{ 
@@ -253,9 +254,9 @@ expr	: OBJECTID ASSIGN expr
 	| LET let_expr 
 	{$$=$<ival>1;}
 	| CASE expr OF cases ESAC
-	{$$=opr(CASE,2,$2,$4);}
+	{$$=opr(CASE,2,$2,$4);}//Continue
 	| NEW TYPEID
-	{/*To be handled*/}
+	{$$=identifier($<sval>2);}
 	| ISVOID expr
 	{$$=opr($<ival>1,1,$2);}
 	| expr '+' expr

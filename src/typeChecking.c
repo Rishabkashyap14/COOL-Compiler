@@ -2,6 +2,7 @@
 #include <string.h>
 #include "typeChecking.h"
 #include <stdarg.h>
+#include <stdio.h>
 #include "y.tab.h"
 static int lbl;
 /*Check if dollar stuff gives int or char * */
@@ -153,20 +154,46 @@ int ex(nodeType *p)
 					break; 
 				case DARROW:
 					ex(p->opr.op[2]);
-					printf("\tpop\t%s:%s\n",p->opr.op[0]->id.i,p->opr.op[1]->id.i);
+					printf("\tpop\t%s\n",p->opr.op[0]->id.i);
 					break;   
 				case '=':
 					ex(p->opr.op[0]);                         
 					break;  
 				case IN:
-					ex(p->opr.op[3]);
-					ex(opr(DARROW,3,p->opr.op[0],p->opr.op[1],p->opr.op[2]));
+					ex(p->opr.op[2]);
+					ex(opr(DARROW,3,p->opr.op[0],p->opr.op[1]));
 					break;
 				case LET:
-					ex(p->opr.op[3]);
 					ex(p->opr.op[2]);
+					ex(p->opr.op[1]);
 					ex(p->opr.op[0]);
 					break;
+				case '@':
+					ex(p->opr.op[0]);
+					printf("\tpop\t%s\n",p->opr.op[1]->id.i);
+					break;
+				case '(':
+					ex(p->opr.op[2]);
+					ex(p->opr.op[0]);
+					printf("\tpop\t%s\n",p->opr.op[1]->id.i);
+					break;
+				case ' ':
+					ex(p->opr.op[0]);
+					break;
+				case ')':
+					ex(p->opr.op[0]);
+					ex(p->opr.op[1]);
+					break;
+				case '.':
+					ex(p->opr.op[0]);
+					ex(p->opr.op[1]);
+					break;
+				case 'a':
+					ex(p->opr.op[2]);
+					ex(p->opr.op[0]);
+					ex(p->opr.op[1]);
+					break;
+				
 				default:             
 					ex(p->opr.op[0]);             
 					ex(p->opr.op[1]);             
@@ -178,7 +205,7 @@ int ex(nodeType *p)
 						case '/':   printf("\tdiv\n"); break;             
 						case '<':   printf("\tcompLT\n"); break;                         
 						case LE:    printf("\tcompLE\n"); break;                         
-						case 284:    printf("\tcompEQ\n"); break;             
+						case 284:    printf("\tcompEQ\n"); break; //Comparison =             
 					}         
 				}     
 			}     
