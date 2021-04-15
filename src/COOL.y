@@ -3,6 +3,7 @@ void yyerror (char *s);
 #include <stdio.h>
 #include <stdlib.h>
 #include "cool.h"
+#include "typeChecking.h"
 
 extern FILE *yyin;	/* Findout where this is */
 int curr_lineno=0;
@@ -70,11 +71,12 @@ program	: class_list	{exit(0);}
 /*class list may be: */
 class_list
 	: class			/* single class */
-	{$$=$1;}
+	{$$=$<ival>1;}
 	| error ';'
 	| class_list class	/* several classes */
-	{$$ = $2;}
+	{$$ = $<ival>2;}
 	| class_list error ';'
+	{}
 	;
 
 
@@ -86,14 +88,14 @@ class	: CLASS TYPEID '{' feature_list '}' ';'/*without inherits i.e. from Object
 			curr_lineno++;
 			//node=create_entry($2,3,curr_lineno,4,0,"0");
 			//t=insert_entry(node,t);	
-			$$=$1;	   
+			$$=$<ival>1;	   
 		}
 	| CLASS TYPEID '{' '}' ';' /* without inherits or features */
 		{ 
 			curr_lineno++;
 			//node=create_entry($2,3,curr_lineno,4,0,"0");
 			//t=insert_entry(node,t);
-			$$=$1;		   
+			$$=$<ival>1;		   
 		}
 	| CLASS TYPEID INHERITS TYPEID '{' feature_list '}' ';'
 		{ 
@@ -123,20 +125,27 @@ feature_list	: feature ';'	/*single feature */
 /* feature::= ID([formal[,formal]*]):TYPE{expr}	..(i)
 	|	ID:TYPE[<-expr]			..(ii) */
 feature	: OBJECTID '(' formals_list ')' ':' TYPEID '{' expr '}' /* For a method(i) */
-	{$$=ex();}
+	{$$=ex($8);}//,$3,$1,$6);}
 	| OBJECTID '(' formals_list ')' ':' TYPEID '{' '}'	/* no expression */
+	{$$=ex(NULL);}//,$3,$1,$6);}
 	| OBJECTID '(' ')' ':' TYPEID '{' '}'			/* no formal parameters and expressions*/
+	{$$=ex(NULL);}//,NULL,$1,$6);}
 	| OBJECTID '(' ')' ':' TYPEID '{' expr '}'		/* no formal parameters */
+	{$$=ex($7);}//,NULL,$1,$6);}
 	| OBJECTID ':' TYPEID opt_assign			/* For an attribute(ii) */
+	{$$ = ex(opr(ASSIGN,3,$1,$3,$4));/**/}
 	;
 
 /* RULE 4 */
 /* formal::= ID:TYPE */
-formal	: OBJECTID ':' TYPEID 
+formal	: OBJECTID ':' TYPEID
+	{$$=identifier($<sval>1);} 
 	;
 
 formals_list	: formal 
+		{$$=identifier($<sval>1);}
 	     	| formals_list ',' formal 
+		{$$ = opr(',', 2, NULL, NULL);}
 		;
 
 /* RULE 5 */
@@ -164,41 +173,51 @@ expr::=  ID<-expr							assignment
 	|ID|integer|string|true|false					values
 */
 exprs_comma	: expr
+		{$$=$1;}
 		| exprs_comma ',' expr
+		{$$ = opr(',', 2, NULL, NULL);}
 		;
 
 exprs_semi	: expr ';'
+		{$$=$1;}
 		| exprs_semi expr ';'
+		{$$ = opr(';', 2, NULL, NULL);}
 		;
 
 case	: OBJECTID ':' TYPEID DARROW expr ';'
+	{$$=opr(DARROW,3,$1,$3,$5);/*a:A<=(5+3);*/}
 	;
 
 cases 	: case
+	{$$=$1;}
 	| cases case
+	{$$=$2;}
 	;
 
 opt_assign	: 
 		| ASSIGN expr
+		{$$=opr('=',1,$2);}
 		;
 
 let_expr	: OBJECTID ':' TYPEID opt_assign IN expr 
 	 		%prec LET
+		{$$ = opr(IN, 4, $1, $3,$4,$<sval>5);}
 		| OBJECTID ':' TYPEID opt_assign ',' let_expr
+		{$$ = opr(LET, 4, $1, $3,$4,$<sval>5);}
 		| error ',' let_expr
-		{$$=$3}
+		{$$=$3;}
 		;
 
 expr	: OBJECTID ASSIGN expr
-	{$$=opr($2,2,$1,$3);}
+	{$$=opr($<ival>2,2,$1,$3);}
 	| expr '@' TYPEID '.' OBJECTID '(' ')'
 	{	/*operator identified by @*/
-		$$=opr($2,3,$1,$3,$5);
+		$$=opr($<sval>2,3,$1,$3,$5);
 	}
 	| expr '@' TYPEID '.' OBJECTID '(' exprs_comma ')'
 	{
 		/*operator identified by (*/
-		$$=opr($6,4,$1,$3,$5,$7);
+		$$=opr($<ival>6,4,$1,$3,$5,$7);
 	}
 	| OBJECTID '(' ')'
 		{ 
@@ -214,47 +233,47 @@ expr	: OBJECTID ASSIGN expr
 			node=create_entry($1,3,curr_lineno,5,0,$3);
 			t=insert_entry(node,t);
 			/* operator identified by ')' */
-			$$=opr($4,2,$1,$3);		   
+			$$=opr($<ival>4,2,$1,$3);		   
 		}
 	| expr '.' OBJECTID '(' ')'
-	{$$=opr($2,2,$1,$3);}
+	{$$=opr($<sval>2,2,$1,$3);}
 	| expr '.' OBJECTID '(' exprs_comma ')'
 	{
 		/*operator identified by a */
 		$$=opr('a',3,$1,$3,$5);
 	}
 	| IF expr THEN expr ELSE expr FI
-	{$$ = opr(IF, 3, $2, $4, $6);}
+	{$$ = opr(IF, 3, $2, $4, $6);/**/}
 	| WHILE expr LOOP expr POOL
-	{$$ = opr(WHILE, 2, $2, $4);}
+	{$$ = opr(WHILE, 2, $2, $4);/**/}
 	| '{' exprs_semi '}'
 	{$$ = $2;}
 	| '{' '}'
 	| '{' error '}'
 	| LET let_expr 
-	{$$=$1;}
+	{$$=$<ival>1;}
 	| CASE expr OF cases ESAC
 	{$$=opr(CASE,2,$2,$4);}
 	| NEW TYPEID
 	{/*To be handled*/}
 	| ISVOID expr
-	{$$=opr($1,1,$2);}
+	{$$=opr($<ival>1,1,$2);}
 	| expr '+' expr
-	{$$=opr($2,2,$1,$3);}
+	{$$=opr($<sval>2,2,$1,$3);/**/}
 	| expr '-' expr
-	{$$=opr($2,2,$1,$3);}
+	{$$=opr($<sval>2,2,$1,$3);/**/}
 	| expr '*' expr 
-	{$$=opr($2,2,$1,$3);}
+	{$$=opr($<sval>2,2,$1,$3);/**/}
 	| expr '/' expr
-	{$$=opr($2,2,$1,$3);} 
+	{$$=opr($<sval>2,2,$1,$3);/**/} 
 	| '~' expr
-	{$$=opr($1,1,$2);}
+	{$$=opr($<sval>1,1,$2);/**/}
 	| expr '<' expr
-	{$$=opr($2,2,$1,$3);}
+	{$$=opr($<sval>2,2,$1,$3);/**/}
 	| expr LE expr
-	{$$=opr($2,2,$1,$3);}
+	{$$=opr($<ival>2,2,$1,$3);/**/}
 	| expr '=' expr
-	{$$=opr($2,2,$1,$3);}
+	{$$=opr(284,2,$1,$3);/**/}
 	| NOT expr
 	{$$=$2;}
 	| '(' expr ')'

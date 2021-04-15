@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 typedef enum { typeInt, typeStr, typeBool, typeId, typeOpr } nodeEnum;
 
  /* constants */ 
@@ -42,3 +44,5 @@ nodeType *int_constant(int value);
 nodeType *str_constant(char *value);
 nodeType *identifier(char *id);
 nodeType *opr(int oper, int nops, ...); 
+int ex(nodeType *p);
+int exGraph(nodeType *p);

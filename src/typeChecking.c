@@ -1,5 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
+#include "typeChecking.h"
+#include <stdarg.h>
+#include "y.tab.h"
+static int lbl;
 /*Check if dollar stuff gives int or char * */
 
 /*Handling constant datatypes */
@@ -73,18 +77,110 @@ nodeType *opr(int oper, int nops, ...)
 	va_start(ap, nops);     
 	for (i = 0; i < nops; i++)         
 		result->opr.op[i] = va_arg(ap, nodeType *); 
-	if(result->oper=='+' || result->oper=='-' ||  result->oper=='*' || result->oper=='/' || result->oper=='<' || strcmp(result->oper,"<=") ||  result->oper=='=')
+	if(result->opr.oper=='+' || result->opr.oper=='-' ||  result->opr.oper=='*' || result->opr.oper=='/' || result->opr.oper=='<' || !strcmp(result->opr.oper,"<=") ||  result->opr.oper=='=')
 		if(result->opr.op[0]->type!=typeInt || result->opr.op[1]->type!=typeInt)
 			yyerror("Cannot perform arithmetic operation with one non-integer constant.");
-	if(strcmp(result->oper,"NOT"))
+	if(!strcmp(result->opr.oper,"NOT"))
 		if(result->opr.op[0]->type!=typeBool)
 			yyerror("Requires Boolean operand.");
-	if(result->oper=='.')
+	if(result->opr.oper=='.')
 		if(result->opr.op[1]->type!=typeId)
 			yyerror("Object identifier must follow the . operator.");
-	if(strcmp(result->oper,"<-"))
+	if(!strcmp(result->opr.oper,"<-"))
 		if(result->opr.op[0]->type!=typeId)
 			yyerror("Assignment not possible to this type.");
 	va_end(ap);     
 	return result; 
+}
+
+int ex(nodeType *p) 
+{     
+	int lbl1, lbl2;     
+	if (!p) 
+		return 0;     
+	switch(p->type) 
+	{     
+		case typeInt:                
+			printf("\tpush\t%d\n", p->i.value);          
+			break; 
+		case typeBool:                
+			printf("\tpush\t%d\n", p->b.value);          
+			break; 
+		case typeStr:                
+			printf("\tpush\t%s\n", p->s.value);          
+			break;     
+		case typeId:                 
+			printf("\tpush\t%s\n", p->id.i);          
+			break;     
+		case typeOpr:         
+			switch(p->opr.oper) 
+			{         
+				case WHILE:             
+					printf("L%03d:\n", lbl1 = lbl++);             
+					ex(p->opr.op[0]);             
+					printf("\tjz\tL%03d\n", lbl2 = lbl++);             
+					ex(p->opr.op[1]);             
+					printf("\tjmp\tL%03d\n", lbl1);             
+					printf("L%03d:\n", lbl2);             
+					break;         
+				case IF:             
+					ex(p->opr.op[0]);             
+					if (p->opr.nops > 2) 
+					{                 
+						/* if else */                 
+						printf("\tjz\tL%03d\n", lbl1 = lbl++);                 
+						ex(p->opr.op[1]);                 
+						printf("\tjmp\tL%03d\n", lbl2 = lbl++);                 
+						printf("L%03d:\n", lbl1);                 
+						ex(p->opr.op[2]);                 
+						printf("L%03d:\n", lbl2);             
+					} 
+					else 
+					{                 
+						/* if */                 
+						printf("\tjz\tL%03d\n", lbl1 = lbl++);                 
+						ex(p->opr.op[1]);                 
+						printf("L%03d:\n", lbl1);             
+					}             
+					break;         
+        			case ASSIGN:                    
+					ex(p->opr.op[1]);             
+					printf("\tpop\t%c\n", p->opr.op[0]->id.i);             
+					break;         
+				case '~':                 
+					ex(p->opr.op[0]);             
+					printf("\tneg\n");             
+					break; 
+				case DARROW:
+					ex(p->opr.op[2]);
+					printf("\tpop\t%s:%s\n",p->opr.op[0]->id.i,p->opr.op[1]->id.i);
+					break;   
+				case '=':
+					ex(p->opr.op[0]);                         
+					break;  
+				case IN:
+					ex(p->opr.op[3]);
+					ex(opr(DARROW,3,p->opr.op[0],p->opr.op[1],p->opr.op[2]));
+					break;
+				case LET:
+					ex(p->opr.op[3]);
+					ex(p->opr.op[2]);
+					ex(p->opr.op[0]);
+					break;
+				default:             
+					ex(p->opr.op[0]);             
+					ex(p->opr.op[1]);             
+					switch(p->opr.oper) 
+					{             
+						case '+':   printf("\tadd\n"); break;             
+						case '-':   printf("\tsub\n"); break;              
+						case '*':   printf("\tmul\n"); break;             
+						case '/':   printf("\tdiv\n"); break;             
+						case '<':   printf("\tcompLT\n"); break;                         
+						case LE:    printf("\tcompLE\n"); break;                         
+						case 284:    printf("\tcompEQ\n"); break;             
+					}         
+				}     
+			}     
+			return 0; 
 }

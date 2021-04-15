@@ -15,7 +15,7 @@ table* initialize()
 
 entry *create_entry(char* str, int data_type, int declared, int use, int scope, char *value)
 {
-		printf("Creating table entry for %s\n",str);
+		//printf("Creating table entry for %s\n",str);
         entry* E = (entry*)malloc(sizeof(entry));
         if((strcmp(str,"") == 0)){
                 perror("Error: Cannot insert a null entry\n");

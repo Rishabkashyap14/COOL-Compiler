@@ -3,4 +3,3 @@ class Main inherits IO {
     out_string("Hello, world.\n") 
   } ;
 } ;
-&$%@&^$_@$^@_$@
