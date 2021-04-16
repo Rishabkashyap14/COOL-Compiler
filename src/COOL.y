@@ -5,7 +5,7 @@ void yyerror (char *s);
 #include "cool.h"
 #include "typeChecking.h"
 
-extern FILE *yyin;	/* Findout where this is */
+extern FILE *yyin;	
 int curr_lineno=0;
 table *t;
 int yylex();
@@ -88,29 +88,25 @@ class	: CLASS TYPEID '{' feature_list '}' ';'/*without inherits i.e. from Object
 		{ 
 			curr_lineno++;
 			//node=create_entry($2,3,curr_lineno,4,0,"0");
-			//t=insert_entry(node,t);	
-			$$=$<ival>1;	   
+			//t=insert_entry(node,t);		   
 		}
 	| CLASS TYPEID '{' '}' ';' /* without inherits or features */
 		{ 
 			curr_lineno++;
 			//node=create_entry($2,3,curr_lineno,4,0,"0");
-			//t=insert_entry(node,t);
-			$$=$<ival>1;		   
+			//t=insert_entry(node,t);		   
 		}
 	| CLASS TYPEID INHERITS TYPEID '{' feature_list '}' ';'
 		{ 
 			curr_lineno++;
 			//node=create_entry($2,3,curr_lineno,4,0,"0");
-			//t=insert_entry(node,t);
-			$$=$4;		   
+			//t=insert_entry(node,t);		   
 		}
 	| CLASS TYPEID INHERITS TYPEID '{' '}' ';' /* with inherits but no features */
 		{ 
 			curr_lineno++;
 			//node=create_entry($2,3,curr_lineno,4,0,"0");
-			//t=insert_entry(node,t);
-			$$=$4;		   
+			//t=insert_entry(node,t);		   
 		}	
 
 /* feature list formulation */
@@ -134,7 +130,9 @@ feature	: OBJECTID '(' formals_list ')' ':' TYPEID '{' expr '}' /* For a method(
 	| OBJECTID '(' ')' ':' TYPEID '{' expr '}'		/* no formal parameters */
 	{$$=ex($7);}//,NULL,$1,$6);}
 	| OBJECTID ':' TYPEID opt_assign			/* For an attribute(ii) */
-	{$$ = ex(opr(ASSIGN,3,$1,$3,$4));/**/}
+	{	
+		$$ = ex(opr(ASSIGN,3,$1,$3,$4));/**/
+	}
 	;
 
 /* RULE 4 */
@@ -144,7 +142,7 @@ formal	: OBJECTID ':' TYPEID
 	;
 
 formals_list	: formal 
-		{$$=identifier($<sval>1);}
+		{$$=$1;}
 	     	| formals_list ',' formal 
 		{$$ = opr(',', 2, NULL, NULL);}
 		;
@@ -197,7 +195,9 @@ cases 	: case
 
 opt_assign	: 
 		| ASSIGN expr
-		{$$=opr('=',1,$2);}
+		{
+			$$=opr('=',1,$2);
+		}
 		;
 
 let_expr	: OBJECTID ':' TYPEID opt_assign IN expr 
@@ -254,7 +254,7 @@ expr	: OBJECTID ASSIGN expr
 	| LET let_expr 
 	{$$=$<ival>1;}
 	| CASE expr OF cases ESAC
-	{$$=opr(CASE,2,$2,$4);}//Continue
+	{$$=opr(CASE,2,$2,$4);}
 	| NEW TYPEID
 	{$$=identifier($<sval>2);}
 	| ISVOID expr
@@ -282,13 +282,13 @@ expr	: OBJECTID ASSIGN expr
 	| OBJECTID 
 	{$$=identifier($<sval>1);}
 	| STR_CONST
-	{$$=str_constant($<sval>1);}
+	{$$=ex(str_constant($1));}
 	| INT_CONST
 	{$$=integer_constant($<ival>1);}
 	| TRUE
-	{$$=bool_constant($<sval>1);}
+	{$$=ex(bool_constant($<sval>1));}
 	| FALSE
-	{$$=bool_constant($<sval>1);}
+	{$$=ex(bool_constant($<sval>1));}
 	; 
 
 

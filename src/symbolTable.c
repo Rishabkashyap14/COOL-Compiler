@@ -7,7 +7,7 @@ int i=0;
 
 table* initialize()
 {
-		table* t=(table*)malloc(sizeof(table));
+	table* t=(table*)malloc(sizeof(table));
         t->head = NULL;
         t->nentries = 0;
         return t;
@@ -94,7 +94,7 @@ int lookup_entry_by_str(char *str,table *t)
 	while(p != NULL)
 	{
 		if((strcmp(p->str,str)) == 0)
-			return 1;
+			return p->index;
 		else
 			p = p->next;
 	}

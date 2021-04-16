@@ -4,7 +4,9 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include "y.tab.h"
+#include "cool.h"
 static int lbl;
+extern table *t;
 /*Check if dollar stuff gives int or char * */
 
 /*Handling constant datatypes */
@@ -55,9 +57,10 @@ nodeType *identifier(char *id)
 	/* allocate node */     
 	if ((result = malloc(sizeof(nodeType))) == NULL)         
 		yyerror("out of memory");     
-	/* copy information */     
+	/* copy information */  
+	int i=lookup_entry_by_str(id,t);   
 	result->type = typeId;     
-	result->id.i = id;     
+	result->id.i = i;     
 	return result; 
 }
 
@@ -78,27 +81,24 @@ nodeType *opr(int oper, int nops, ...)
 	va_start(ap, nops);     
 	for (i = 0; i < nops; i++)         
 		result->opr.op[i] = va_arg(ap, nodeType *); 
-	if(result->opr.oper=='+' || result->opr.oper=='-' ||  result->opr.oper=='*' || result->opr.oper=='/' || result->opr.oper=='<' || !strcmp(result->opr.oper,"<=") ||  result->opr.oper=='=')
+	if(result->opr.oper=='+' || result->opr.oper=='-' ||  result->opr.oper=='*' || result->opr.oper=='/' || result->opr.oper=='<'|| result->opr.oper==DARROW)
 		if(result->opr.op[0]->type!=typeInt || result->opr.op[1]->type!=typeInt)
 			yyerror("Cannot perform arithmetic operation with one non-integer constant.");
-	if(!strcmp(result->opr.oper,"NOT"))
+	if(result->opr.oper==NOT)
 		if(result->opr.op[0]->type!=typeBool)
 			yyerror("Requires Boolean operand.");
 	if(result->opr.oper=='.')
 		if(result->opr.op[1]->type!=typeId)
 			yyerror("Object identifier must follow the . operator.");
-	if(!strcmp(result->opr.oper,"<-"))
-		if(result->opr.op[0]->type!=typeId)
-			yyerror("Assignment not possible to this type.");
 	va_end(ap);     
 	return result; 
 }
 
-int ex(nodeType *p) 
+nodeType *ex(nodeType *p) 
 {     
 	int lbl1, lbl2;     
 	if (!p) 
-		return 0;     
+		return NULL;     
 	switch(p->type) 
 	{     
 		case typeInt:                
@@ -145,8 +145,10 @@ int ex(nodeType *p)
 					}             
 					break;         
         			case ASSIGN:                    
-					ex(p->opr.op[1]);             
-					printf("\tpop\t%c\n", p->opr.op[0]->id.i);             
+					printf("\tpush\t%d", p->opr.op[0]->id.i); 
+					printf(":%s\n",p->opr.op[1]->id.i);
+					ex(p->opr.op[2]);         
+					printf("\tpop\n");             
 					break;         
 				case '~':                 
 					ex(p->opr.op[0]);             
@@ -193,6 +195,10 @@ int ex(nodeType *p)
 					ex(p->opr.op[0]);
 					ex(p->opr.op[1]);
 					break;
+				case CASE:
+					ex(p->opr.op[0]);
+					ex(p->opr.op[1]);
+					break;
 				
 				default:             
 					ex(p->opr.op[0]);             
@@ -209,5 +215,5 @@ int ex(nodeType *p)
 					}         
 				}     
 			}     
-			return 0; 
+			return p; 
 }
