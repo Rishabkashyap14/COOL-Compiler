@@ -1,5 +1,6 @@
 %{
 void yyerror (char *s);
+#define YYDEBUG 1
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -287,7 +288,8 @@ expr	: OBJECTID ASSIGN expr
 	| OBJECTID 
 	{
 		printf("OBJECT ID: %s\n",$<sval>1);
-		$$=identifier($1);
+		if(!strcmp($<sval>1,"else"))
+			$$=identifier("b");
 	}
 	| STR_CONST
 	{$$=str_constant($1);}
