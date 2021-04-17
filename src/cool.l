@@ -5,6 +5,7 @@
 #include<string.h>
 #include<errno.h>
 #include "cool.h"
+#include "typeChecking.h"
 
 /* Max size of string constants */
 #define MAX_STR_CONST 1025
@@ -54,7 +55,7 @@ ESCAPE			\\
 DARROW         	=>
 LE				<=
 ASSIGN			<-
-STRING			[^\n\"\\]+
+STRING			\"[^"\n]*["\n]
 DQUOTE			\"
 NEWLINE			(\n)
 
@@ -161,14 +162,14 @@ printf("%s\n",yytext);
     return FALSE;
 }
 {OBJ_ID} {
-	printf("%s\n",yytext);
+	printf("OBJECT id:%s\n",yytext);
 	yylval.sval=strdup(yytext);
     if(!lookup_entry_by_str(yytext, t))
     {
 		node=create_entry(yytext,3,yylineno,5,0,"0");
 		t=insert_entry(node,t);
 		printf("inserted\n");
-	}
+    }
     return OBJECTID;
 }
 		 
@@ -183,12 +184,9 @@ printf("%s\n",yytext);
     }
     return TYPEID;
 }
-{DQUOTE} {
-    BEGIN(STRING);
-    string_buf_ptr = string_buf;
-}
-<STRING>{DQUOTE} {
-printf("%s\n",yytext);
+
+{STRING} {
+/*printf("%s\n",yytext);
     BEGIN(INITIAL);
     if (string_buf_ptr < string_buf + MAX_STR_CONST) {
         *string_buf_ptr = '\0';
@@ -196,7 +194,13 @@ printf("%s\n",yytext);
     } else {
         yylval.error_msg = "String constant too long";
         return ERROR;
-    }
+    }*/
+	yylval.sval = strdup(yytext);                
+	if (yylval.sval[yyleng-1] != '"')                    
+		printf("improperly terminated string\n");                
+	else                    
+		return STR_CONST;               
+	printf("found '%s'\n", yylval.sval);
 }
 <STRING>{ESCAPE} {
 printf("%s\n",yytext);

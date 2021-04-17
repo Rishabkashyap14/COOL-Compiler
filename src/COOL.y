@@ -2,6 +2,7 @@
 void yyerror (char *s);
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include "cool.h"
 #include "typeChecking.h"
 
@@ -18,6 +19,7 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 	char* sval;
 	int ival;
 	char *error_msg;
+	nodeType *nval;
 }
 
 /* Types for the non-terminals */
@@ -37,7 +39,7 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 %type <sval> case
 %type <sval> cases
 
-%token CLASS 258 ELSE 259 FI 260 IF 261 IN 262 
+%token CLASS 258 ELSE 259 FI 260 IF 261 IFX 286 IN 262 
 %token INHERITS 263 LET 264 LOOP 265 POOL 266 THEN 267 WHILE 268
 %token CASE 269 ESAC 270 OF 271 DARROW 272 NEW 273 ISVOID 274
 %token <sval>  STR_CONST 275 INT_CONST 276 
@@ -108,6 +110,7 @@ class	: CLASS TYPEID '{' feature_list '}' ';'/*without inherits i.e. from Object
 			//node=create_entry($2,3,curr_lineno,4,0,"0");
 			//t=insert_entry(node,t);		   
 		}	
+	;
 
 /* feature list formulation */
 feature_list	: feature ';'	/*single feature */
@@ -122,7 +125,7 @@ feature_list	: feature ';'	/*single feature */
 /* feature::= ID([formal[,formal]*]):TYPE{expr}	..(i)
 	|	ID:TYPE[<-expr]			..(ii) */
 feature	: OBJECTID '(' formals_list ')' ':' TYPEID '{' expr '}' /* For a method(i) */
-	{$$=ex($8);}//,$3,$1,$6);}
+	{$$=ex($1);}//,$3,$1,$6);}
 	| OBJECTID '(' formals_list ')' ':' TYPEID '{' '}'	/* no expression */
 	{$$=ex(NULL);}//,$3,$1,$6);}
 	| OBJECTID '(' ')' ':' TYPEID '{' '}'			/* no formal parameters and expressions*/
@@ -131,14 +134,16 @@ feature	: OBJECTID '(' formals_list ')' ':' TYPEID '{' expr '}' /* For a method(
 	{$$=ex($7);}//,NULL,$1,$6);}
 	| OBJECTID ':' TYPEID opt_assign			/* For an attribute(ii) */
 	{	
-		$$ = ex(opr(ASSIGN,3,$1,$3,$4));/**/
+		$$ = ex(opr(ASSIGN,3,identifier($1),$3,$4));/**/
 	}
 	;
 
 /* RULE 4 */
 /* formal::= ID:TYPE */
 formal	: OBJECTID ':' TYPEID
-	{$$=identifier($<sval>1);} 
+	{
+		$$=identifier($<sval>1);
+	} 
 	;
 
 formals_list	: formal 
@@ -174,17 +179,17 @@ expr::=  ID<-expr							assignment
 exprs_comma	: expr
 		{$$=$1;}
 		| exprs_comma ',' expr
-		{$$ = opr(',', 2, NULL, NULL);}
+		{$$ = opr(',', 2, NULL, $1);}
 		;
 
 exprs_semi	: expr ';'
 		{$$=$1;}
 		| exprs_semi expr ';'
-		{$$ = opr(';', 2, NULL, NULL);}
+		{$$ = ex(opr(';', 2,NULL,$2));}
 		;
 
 case	: OBJECTID ':' TYPEID DARROW expr ';'
-	{$$=opr(DARROW,3,$1,$3,$5);/*a:A<=(5+3);*/}
+	{$$=opr(DARROW,3,identifier($1),$3,$5);/*a:A<=(5+3);*/}
 	;
 
 cases 	: case
@@ -202,9 +207,9 @@ opt_assign	:
 
 let_expr	: OBJECTID ':' TYPEID opt_assign IN expr 
 	 		%prec LET
-		{$$ = opr(IN, 3, $1,$4,$<sval>5);}
+		{$$ = opr(IN, 3, identifier($1),identifier($4),$<sval>5);}
 		| OBJECTID ':' TYPEID opt_assign ',' let_expr
-		{$$ = opr(LET, 3, $1,$4,$<sval>5);}
+		{$$ = opr(LET, 3, identifier($1),identifier($4),$<sval>5);}
 		| error ',' let_expr
 		{$$=$3;}
 		;
@@ -234,10 +239,10 @@ expr	: OBJECTID ASSIGN expr
 			node=create_entry($1,3,curr_lineno,5,0,$3);
 			t=insert_entry(node,t);
 			/* operator identified by ')' */
-			$$=opr($<ival>4,2,$1,$3);		   
+			$$=opr(')',2,$1,$3);		   
 		}
 	| expr '.' OBJECTID '(' ')'
-	{$$=opr($<sval>2,2,$1,$3);}
+	{$$=opr('.',2,$1,$3);}
 	| expr '.' OBJECTID '(' exprs_comma ')'
 	{
 		/*operator identified by a */
@@ -260,37 +265,39 @@ expr	: OBJECTID ASSIGN expr
 	| ISVOID expr
 	{$$=opr($<ival>1,1,$2);}
 	| expr '+' expr
-	{$$=opr($<sval>2,2,$1,$3);/**/}
+	{$$=opr('+',2,$1,$3);/**/}
 	| expr '-' expr
-	{$$=opr($<sval>2,2,$1,$3);/**/}
+	{$$=opr('-',2,$1,$3);/**/}
 	| expr '*' expr 
-	{$$=opr($<sval>2,2,$1,$3);/**/}
+	{$$=opr('*',2,$1,$3);/**/}
 	| expr '/' expr
-	{$$=opr($<sval>2,2,$1,$3);/**/} 
+	{$$=opr('/',2,$1,$3);/**/} 
 	| '~' expr
-	{$$=opr($<sval>1,1,$2);/**/}
+	{$$=opr('~',1,$2);/**/}
 	| expr '<' expr
-	{$$=opr($<sval>2,2,$1,$3);/**/}
+	{$$=opr('<',2,$1,$3);/**/}
 	| expr LE expr
 	{$$=opr($<ival>2,2,$1,$3);/**/}
 	| expr '=' expr
-	{$$=opr(284,2,$1,$3);/**/}
+	{$$=opr(285,2,$1,$3);/**/}
 	| NOT expr
-	{$$=$2;}
+	{$$=opr(NOT,1,$2);}
 	| '(' expr ')'
 	{$$=$2;}
 	| OBJECTID 
-	{$$=identifier($<sval>1);}
+	{
+		printf("OBJECT ID: %s\n",$<sval>1);
+		$$=identifier($1);
+	}
 	| STR_CONST
-	{$$=ex(str_constant($1));}
+	{$$=str_constant($1);}
 	| INT_CONST
 	{$$=integer_constant($<ival>1);}
 	| TRUE
-	{$$=ex(bool_constant($<sval>1));}
+	{$$=bool_constant($<sval>1);}
 	| FALSE
-	{$$=ex(bool_constant($<sval>1));}
-	; 
-
+	{$$=bool_constant($<sval>1);} 
+	;
 
 %%
 

@@ -57,10 +57,10 @@ nodeType *identifier(char *id)
 	/* allocate node */     
 	if ((result = malloc(sizeof(nodeType))) == NULL)         
 		yyerror("out of memory");     
-	/* copy information */  
-	int i=lookup_entry_by_str(id,t);   
+	/* copy information */    
 	result->type = typeId;     
-	result->id.i = i;     
+	result->id.i = id;    
+	printf("Created identifier for %s\n",id); 
 	return result; 
 }
 
@@ -81,12 +81,12 @@ nodeType *opr(int oper, int nops, ...)
 	va_start(ap, nops);     
 	for (i = 0; i < nops; i++)         
 		result->opr.op[i] = va_arg(ap, nodeType *); 
-	if(result->opr.oper=='+' || result->opr.oper=='-' ||  result->opr.oper=='*' || result->opr.oper=='/' || result->opr.oper=='<'|| result->opr.oper==DARROW)
-		if(result->opr.op[0]->type!=typeInt || result->opr.op[1]->type!=typeInt)
+	/*if(result->opr.oper=='+' || result->opr.oper=='-' ||  result->opr.oper=='*' || result->opr.oper=='/' || result->opr.oper=='<'|| result->opr.oper==DARROW)
+		if(result->opr.op[0]->type!=typeInt || result->opr.op[1]->type!=typeInt || result->opr.op[0]->type!=typeId || result->opr.op[1]->type!=typeId)
 			yyerror("Cannot perform arithmetic operation with one non-integer constant.");
 	if(result->opr.oper==NOT)
 		if(result->opr.op[0]->type!=typeBool)
-			yyerror("Requires Boolean operand.");
+			yyerror("Requires Boolean operand.");*/
 	if(result->opr.oper=='.')
 		if(result->opr.op[1]->type!=typeId)
 			yyerror("Object identifier must follow the . operator.");
@@ -125,28 +125,22 @@ nodeType *ex(nodeType *p)
 					printf("L%03d:\n", lbl2);             
 					break;         
 				case IF:             
-					ex(p->opr.op[0]);             
+					ex(p->opr.op[0]); 
+					printf("\tjz\tL%03d\n", lbl1 = lbl++);                 
+					ex(p->opr.op[1]);            
 					if (p->opr.nops > 2) 
 					{                 
-						/* if else */                 
-						printf("\tjz\tL%03d\n", lbl1 = lbl++);                 
-						ex(p->opr.op[1]);                 
+						/* if else */                                  
 						printf("\tjmp\tL%03d\n", lbl2 = lbl++);                 
 						printf("L%03d:\n", lbl1);                 
 						ex(p->opr.op[2]);                 
 						printf("L%03d:\n", lbl2);             
 					} 
-					else 
-					{                 
-						/* if */                 
-						printf("\tjz\tL%03d\n", lbl1 = lbl++);                 
-						ex(p->opr.op[1]);                 
-						printf("L%03d:\n", lbl1);             
-					}             
+					else                                   
+						printf("L%03d:\n", lbl1);                          
 					break;         
         			case ASSIGN:                    
-					printf("\tpush\t%d", p->opr.op[0]->id.i); 
-					printf(":%s\n",p->opr.op[1]->id.i);
+					printf("\tpush\t%s\n", p->opr.op[0]->id.i); 
 					ex(p->opr.op[2]);         
 					printf("\tpop\n");             
 					break;         
@@ -180,7 +174,7 @@ nodeType *ex(nodeType *p)
 					printf("\tpop\t%s\n",p->opr.op[1]->id.i);
 					break;
 				case ' ':
-					ex(p->opr.op[0]);
+					ex(p->opr.op[1]);
 					break;
 				case ')':
 					ex(p->opr.op[0]);
@@ -199,7 +193,10 @@ nodeType *ex(nodeType *p)
 					ex(p->opr.op[0]);
 					ex(p->opr.op[1]);
 					break;
-				
+				case NOT:
+					ex(p->opr.op[0]);
+					printf("\tnot\n");
+					break;
 				default:             
 					ex(p->opr.op[0]);             
 					ex(p->opr.op[1]);             
@@ -211,7 +208,7 @@ nodeType *ex(nodeType *p)
 						case '/':   printf("\tdiv\n"); break;             
 						case '<':   printf("\tcompLT\n"); break;                         
 						case LE:    printf("\tcompLE\n"); break;                         
-						case 284:    printf("\tcompEQ\n"); break; //Comparison =             
+						case 285:    printf("\tcompEQ\n"); break; //Comparison =             
 					}         
 				}     
 			}     
