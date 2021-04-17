@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 typedef enum { typeInt, typeStr, typeBool, typeId, typeOpr } nodeEnum;
 
  /* constants */ 
@@ -16,7 +18,7 @@ typedef struct {
 
 /* identifiers */ 
 typedef struct {     
-	int i;                      /* subscript to sym array */ 
+	int i;                      /* subscript to sym table */ 
 } idNodeType; 
 
 /* operators */ 
@@ -31,14 +33,16 @@ typedef struct nodeTypeTag {
 	union {         
 		bool_con b;
 		int_con i; 
-		str_con s;       /* constants */         
+		str_con s;       	/* constants */         
 		idNodeType id;          /* identifiers */         
 		oprNodeType opr;        /* operators */     
 	}; 
 } nodeType;
 
 nodeType *bool_constant(char *value);
-nodeType *int_constant(int value);
+nodeType *integer_constant(int value);
 nodeType *str_constant(char *value);
 nodeType *identifier(char *id);
 nodeType *opr(int oper, int nops, ...); 
+nodeType *ex(nodeType *p);
+int exGraph(nodeType *p);

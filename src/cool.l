@@ -22,7 +22,6 @@ int mcomment_count; /* to handle nested multiline comments */
 %}
 
 INTEGER			[0-9]+
-IDENTIFIER		[a-zA-Z][a-zA-Z0-9_]*
 TYPE_ID			[A-Z][a-zA-Z0-9_]*
 OBJ_ID			[a-z][a-zA-Z0-9_]*
 COMMENT_S		"--".*	
@@ -81,7 +80,7 @@ NEWLINE			(\n)
 }
 {IF} {
 	printf("%s\n",yytext);
-    strcpy(yylval.sval, yytext);
+    yylval.sval=strdup(yytext);
     return IF;
 }
 {IN} {
@@ -161,6 +160,17 @@ printf("%s\n",yytext);
     strcpy(yylval.sval, yytext);
     return FALSE;
 }
+{OBJ_ID} {
+	printf("%s\n",yytext);
+	yylval.sval=strdup(yytext);
+    if(!lookup_entry_by_str(yytext, t))
+    {
+		node=create_entry(yytext,3,yylineno,5,0,"0");
+		t=insert_entry(node,t);
+		printf("inserted\n");
+	}
+    return OBJECTID;
+}
 		 
 {TYPE_ID} {
 	printf("%s\n",yytext);
@@ -172,17 +182,6 @@ printf("%s\n",yytext);
 		printf("inserted\n");
     }
     return TYPEID;
-}
-{OBJ_ID} {
-	printf("%s\n",yytext);
-	yylval.sval=strdup(yytext);
-    if(!lookup_entry_by_str(yytext, t))
-    {
-		node=create_entry(yytext,3,yylineno,5,0,"0");
-		t=insert_entry(node,t);
-		printf("inserted\n");
-	}
-    return OBJECTID;
 }
 {DQUOTE} {
     BEGIN(STRING);

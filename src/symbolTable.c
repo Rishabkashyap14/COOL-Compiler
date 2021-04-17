@@ -7,7 +7,7 @@ int i=0;
 
 table* initialize()
 {
-		table* t=(table*)malloc(sizeof(table));
+	table* t=(table*)malloc(sizeof(table));
         t->head = NULL;
         t->nentries = 0;
         return t;
@@ -15,7 +15,7 @@ table* initialize()
 
 entry *create_entry(char* str, int data_type, int declared, int use, int scope, char *value)
 {
-		printf("Creating table entry for %s\n",str);
+		//printf("Creating table entry for %s\n",str);
         entry* E = (entry*)malloc(sizeof(entry));
         if((strcmp(str,"") == 0)){
                 perror("Error: Cannot insert a null entry\n");
@@ -94,7 +94,7 @@ int lookup_entry_by_str(char *str,table *t)
 	while(p != NULL)
 	{
 		if((strcmp(p->str,str)) == 0)
-			return 1;
+			return p->index;
 		else
 			p = p->next;
 	}
