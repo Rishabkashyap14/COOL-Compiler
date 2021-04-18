@@ -61,3 +61,7 @@ nodeType *opr(int oper, int nops, ...);
 nodeType *ex(nodeType *p);
 int exGraph(nodeType *p);
 void display_tac_table(TAC *t);
+int strengthReduction(TAC *t);
+int constantPropagation(TAC *t);
+int constantFolding(TAC *t);
+int deadcodeElimination(TAC *t);
