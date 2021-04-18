@@ -9,6 +9,7 @@ void yyerror (char *s);
 extern FILE *yyin;	
 int curr_lineno=0;
 table *t;
+TAC *tactable;
 int yylex();
 extern entry* node;
 int omerrs = 0;               /* number of errors in lexing and parsing */
@@ -183,7 +184,7 @@ exprs_comma	: expr
 		;
 
 exprs_semi	: expr ';'
-		{$$=$1;}
+		{$$=ex($1);}
 		| exprs_semi expr ';'
 		{$$ = ex(opr(';', 2,NULL,$2));}
 		;
@@ -314,6 +315,9 @@ void yyerror(char *s)
 int main(int argc, char **argv)
 {	
 	t = initialize();
+	tactable=(TAC *)malloc(sizeof(TAC));
+	tactable->nrows=0;
+	tactable->tacRow=NULL;
 	printf("Inside main\n");
 	FILE * fp= fopen(argv[1], "r");
 	yyin = fp;
@@ -323,5 +327,6 @@ int main(int argc, char **argv)
 	printf("\n\033[0;32mParsing completed.\033[0m\n\n");
 	printf("Symbol Table:\n");
 	display_table(t);
+	display_tac_table(tactable);
 	return 0;
 }

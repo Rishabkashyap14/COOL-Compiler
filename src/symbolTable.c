@@ -3,7 +3,7 @@
 #include <string.h>
 #include<stdlib.h>
 #include<errno.h>
-int i=0;
+int i=1;
 
 table* initialize()
 {
