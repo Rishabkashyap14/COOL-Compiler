@@ -3,6 +3,7 @@
 #include "typeChecking.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include <ctype.h>
 #include "y.tab.h"
 #include "cool.h"
 static int lbl;
@@ -11,6 +12,8 @@ static int temporary;
 static int nentries=-1;
 static nodeType *stack[10];
 extern table *t;
+char temp[10];
+char number[10];
 /*Check if dollar stuff gives int or char * */
 
 /*Handling constant datatypes */
@@ -63,8 +66,8 @@ nodeType *identifier(char *id)
 		yyerror("out of memory");     
 	/* copy information */    
 	result->type = typeId;     
-	result->id.i = id;    
-	printf("Created identifier for %s\n",id); 
+	result->id.i = strdup(id);    
+	//printf("Created identifier for %s\n",id); 
 	return result; 
 }
 
@@ -104,7 +107,6 @@ nodeType *ex(nodeType *p)
 {
 	nodeType *arg1,*arg2;
 	tac *row;
-	char temp[]="t";
 	int lbl1, lbl2;  
 	if (!p) 
 		return NULL;     
@@ -166,8 +168,9 @@ nodeType *ex(nodeType *p)
 					row->oprtr=p;
 					row->arg1=arg1;
 					row->arg2=NULL;
-					temp[1]='0';
-					temp[2]=(temporary++)+'0';
+					strcpy(temp,"t");
+					snprintf(number,3,"%d",temporary++);
+					strcat(temp,number);
 					row->temp=identifier(temp);
 					//printf("%c\t%i\t(null)\t%s\n",row->oprtr->opr.oper,row->arg1->i.value,row->temp->id.i);
 					stack[++nentries]=row->temp;            
@@ -239,13 +242,14 @@ nodeType *ex(nodeType *p)
 						case '+':   
 							arg1=stack[nentries--];
 							arg2=stack[nentries--]; 
-							printf("Arg1:%s Arg2:%s\n",arg1->id.i,arg2->id.i);
+							//printf("Arg1:%s Arg2:%s\n",arg1->id.i,arg2->id.i);
 							row=(tac *)malloc(sizeof(tac));
 							row->oprtr=p;
 							row->arg1=arg1;
 							row->arg2=arg2;
-							temp[1]='0';
-							temp[2]=(temporary++)+'0';
+							strcpy(temp,"t");
+							sprintf(number,"%d",temporary++);
+							strcat(temp,number);
 							row->temp=identifier(temp);
 							//printf("%c\t%s\t%s\t%s\n",row->oprtr->opr.oper,row->arg1->id.i,row->arg2->id.i,row->temp->id.i);
 							stack[++nentries]=row->temp;
@@ -263,13 +267,14 @@ nodeType *ex(nodeType *p)
 						case '-':   
 							arg1=stack[nentries--];
 							arg2=stack[nentries--]; 
-							printf("Arg1:%s Arg2:%d\n",arg1->id.i,arg2->i.value);
+							//printf("Arg1:%s Arg2:%d\n",arg1->id.i,arg2->i.value);
 							row=(tac *)malloc(sizeof(tac));
 							row->oprtr=p;
 							row->arg1=arg1;
 							row->arg2=arg2;
-							temp[1]='0';
-							temp[2]=(temporary++)+'0';
+							strcpy(temp,"t");
+							sprintf(number,"%d",temporary++);
+							strcat(temp,number);
 							row->temp=identifier(temp);
 							//printf("%c\t%s\t%d\t%s\n",row->oprtr->opr.oper,row->arg1->id.i,row->arg2->i.value,row->temp->id.i);
 							stack[++nentries]=row->temp;
@@ -287,13 +292,14 @@ nodeType *ex(nodeType *p)
 						case '*':
 							arg1=stack[nentries--];
 							arg2=stack[nentries--]; 
-							printf("Arg1:%s Arg2:%d\n",arg1->id.i,arg2->i.value);
+							//printf("Arg1:%s Arg2:%d\n",arg1->id.i,arg2->i.value);
 							row=(tac *)malloc(sizeof(tac));
 							row->oprtr=p;
 							row->arg1=arg1;
 							row->arg2=arg2;
-							temp[1]='0';
-							temp[2]=(temporary++)+'0';
+							strcpy(temp,"t");
+							sprintf(number,"%d",temporary++);
+							strcat(temp,number);
 							row->temp=identifier(temp);
 							//printf("%c\t%s\t%d\t%s\n",row->oprtr->opr.oper,row->arg1->id.i,row->arg2->i.value,row->temp->id.i);
 							stack[++nentries]=row->temp; 
@@ -336,7 +342,7 @@ void display_tac_table(TAC *t)
 	{
 		printf("%d\t |",cur->oprtr->opr.oper);
 		if(cur->arg1->type==typeId)
-			printf("%c|",cur->arg1->id.i);
+			printf("%s|",cur->arg1->id.i);
 		else
 			printf("%d|",cur->arg1->i.value);
 		if(cur->arg2==NULL)
