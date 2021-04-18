@@ -65,3 +65,5 @@ int strengthReduction(TAC *t);
 int constantPropagation(TAC *t);
 int constantFolding(TAC *t);
 int deadcodeElimination(TAC *t);
+int copyPropagation(TAC *t);
+int commonSubExprElimination(TAC *t);

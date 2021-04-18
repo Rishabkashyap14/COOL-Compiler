@@ -336,5 +336,9 @@ int main(int argc, char **argv)
 	display_tac_table(tactable);
 	int deadEli1=deadcodeElimination(tactable);
 	display_tac_table(tactable);
+	int copyProp1=copyPropagation(tactable);
+	display_tac_table(tactable);
+	int commonSubExpr1=commonSubExprElimination(tactable);
+	display_tac_table(tactable);
 	return 0;
 }
