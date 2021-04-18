@@ -1647,7 +1647,7 @@ yyreduce:
 
   case 35:
 #line 219 "COOL.y" /* yacc.c:1646  */
-    {(yyval.sval)=opr((yyvsp[-1].ival),2,(yyvsp[-2].sval),(yyvsp[0].sval));}
+    {(yyval.sval)=opr(ASSIGN,2,identifier((yyvsp[-2].sval)),(yyvsp[0].sval));}
 #line 1652 "y.tab.c" /* yacc.c:1646  */
     break;
 
@@ -2099,6 +2099,18 @@ int main(int argc, char **argv)
 	printf("\n\033[0;32mParsing completed.\033[0m\n\n");
 	printf("Symbol Table:\n");
 	display_table(t);
+	display_tac_table(tactable);
+	int strRed1=strengthReduction(tactable);
+	display_tac_table(tactable);
+	int conProp1=constantPropagation(tactable);
+	display_tac_table(tactable);
+	int conFold1=constantFolding(tactable);
+	display_tac_table(tactable);
+	int deadEli1=deadcodeElimination(tactable);
+	display_tac_table(tactable);
+	int copyProp1=copyPropagation(tactable);
+	display_tac_table(tactable);
+	int commonSubExpr1=commonSubExprElimination(tactable);
 	display_tac_table(tactable);
 	return 0;
 }

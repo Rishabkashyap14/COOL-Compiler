@@ -216,7 +216,7 @@ let_expr	: OBJECTID ':' TYPEID opt_assign IN expr
 		;
 
 expr	: OBJECTID ASSIGN expr
-	{$$=opr($<ival>2,2,$1,$3);}
+	{$$=opr(ASSIGN,2,identifier($1),$3);}
 	| expr '@' TYPEID '.' OBJECTID '(' ')'
 	{	/*operator identified by @*/
 		$$=opr($<sval>2,3,$1,$3,$5);
@@ -327,6 +327,18 @@ int main(int argc, char **argv)
 	printf("\n\033[0;32mParsing completed.\033[0m\n\n");
 	printf("Symbol Table:\n");
 	display_table(t);
+	display_tac_table(tactable);
+	int strRed1=strengthReduction(tactable);
+	display_tac_table(tactable);
+	int conProp1=constantPropagation(tactable);
+	display_tac_table(tactable);
+	int conFold1=constantFolding(tactable);
+	display_tac_table(tactable);
+	int deadEli1=deadcodeElimination(tactable);
+	display_tac_table(tactable);
+	int copyProp1=copyPropagation(tactable);
+	display_tac_table(tactable);
+	int commonSubExpr1=commonSubExprElimination(tactable);
 	display_tac_table(tactable);
 	return 0;
 }
