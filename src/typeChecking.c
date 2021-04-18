@@ -6,6 +6,10 @@
 #include "y.tab.h"
 #include "cool.h"
 static int lbl;
+extern TAC *tactable;
+static int temporary;
+static int nentries=-1;
+static nodeType *stack[10];
 extern table *t;
 /*Check if dollar stuff gives int or char * */
 
@@ -94,24 +98,33 @@ nodeType *opr(int oper, int nops, ...)
 	return result; 
 }
 
+
+
 nodeType *ex(nodeType *p) 
-{     
-	int lbl1, lbl2;     
+{
+	nodeType *arg1,*arg2;
+	tac *row;
+	char temp[]="t";
+	int lbl1, lbl2;  
 	if (!p) 
 		return NULL;     
 	switch(p->type) 
 	{     
 		case typeInt:                
-			printf("\tpush\t%d\n", p->i.value);          
+			printf("\tpush\t%d\n", p->i.value);
+			stack[++nentries]=p;          
 			break; 
 		case typeBool:                
-			printf("\tpush\t%d\n", p->b.value);          
+			printf("\tpush\t%d\n", p->b.value);
+			stack[++nentries]=p;         
 			break; 
 		case typeStr:                
-			printf("\tpush\t%s\n", p->s.value);          
+			printf("\tpush\t%s\n", p->s.value);     
+			stack[++nentries]=p;     
 			break;     
 		case typeId:                 
-			printf("\tpush\t%s\n", p->id.i);          
+			printf("\tpush\t%s\n", p->id.i);
+			stack[++nentries]=p;          
 			break;     
 		case typeOpr:         
 			switch(p->opr.oper) 
@@ -146,7 +159,28 @@ nodeType *ex(nodeType *p)
 					break;         
 				case '~':                 
 					ex(p->opr.op[0]);             
-					printf("\tneg\n");             
+					printf("\tneg\n"); 
+					arg1=stack[nentries--];
+					arg2=NULL; 
+					row=(tac *)malloc(sizeof(tac));
+					row->oprtr=p;
+					row->arg1=arg1;
+					row->arg2=NULL;
+					temp[1]='0';
+					temp[2]=(temporary++)+'0';
+					row->temp=identifier(temp);
+					//printf("%c\t%i\t(null)\t%s\n",row->oprtr->opr.oper,row->arg1->i.value,row->temp->id.i);
+					stack[++nentries]=row->temp;            
+					if(tactable->nrows==0)
+						tactable->tacRow=row;
+					else
+					{
+						tac *cur=tactable->tacRow;
+						while(cur->next!=NULL)
+							cur=cur->next;
+						cur->next=row;
+					}
+					tactable->nrows++;
 					break; 
 				case DARROW:
 					ex(p->opr.op[2]);
@@ -202,10 +236,88 @@ nodeType *ex(nodeType *p)
 					ex(p->opr.op[1]);             
 					switch(p->opr.oper) 
 					{             
-						case '+':   printf("\tadd\n"); break;             
-						case '-':   printf("\tsub\n"); break;              
-						case '*':   printf("\tmul\n"); break;             
-						case '/':   printf("\tdiv\n"); break;             
+						case '+':   
+							arg1=stack[nentries--];
+							arg2=stack[nentries--]; 
+							printf("Arg1:%s Arg2:%s\n",arg1->id.i,arg2->id.i);
+							row=(tac *)malloc(sizeof(tac));
+							row->oprtr=p;
+							row->arg1=arg1;
+							row->arg2=arg2;
+							temp[1]='0';
+							temp[2]=(temporary++)+'0';
+							row->temp=identifier(temp);
+							//printf("%c\t%s\t%s\t%s\n",row->oprtr->opr.oper,row->arg1->id.i,row->arg2->id.i,row->temp->id.i);
+							stack[++nentries]=row->temp;
+							if(tactable->nrows==0)
+								tactable->tacRow=row;
+							else
+							{
+								tac *cur=tactable->tacRow;
+								while(cur->next!=NULL)
+									cur=cur->next;
+									cur->next=row;
+							}
+							tactable->nrows++; 
+							break;                          
+						case '-':   
+							arg1=stack[nentries--];
+							arg2=stack[nentries--]; 
+							printf("Arg1:%s Arg2:%d\n",arg1->id.i,arg2->i.value);
+							row=(tac *)malloc(sizeof(tac));
+							row->oprtr=p;
+							row->arg1=arg1;
+							row->arg2=arg2;
+							temp[1]='0';
+							temp[2]=(temporary++)+'0';
+							row->temp=identifier(temp);
+							//printf("%c\t%s\t%d\t%s\n",row->oprtr->opr.oper,row->arg1->id.i,row->arg2->i.value,row->temp->id.i);
+							stack[++nentries]=row->temp;
+							if(tactable->nrows==0)
+								tactable->tacRow=row;
+							else
+							{
+								tac *cur=tactable->tacRow;
+								while(cur->next!=NULL)
+									cur=cur->next;
+									cur->next=row;
+							}
+							tactable->nrows++; 
+							break;              
+						case '*':
+							arg1=stack[nentries--];
+							arg2=stack[nentries--]; 
+							printf("Arg1:%s Arg2:%d\n",arg1->id.i,arg2->i.value);
+							row=(tac *)malloc(sizeof(tac));
+							row->oprtr=p;
+							row->arg1=arg1;
+							row->arg2=arg2;
+							temp[1]='0';
+							temp[2]=(temporary++)+'0';
+							row->temp=identifier(temp);
+							//printf("%c\t%s\t%d\t%s\n",row->oprtr->opr.oper,row->arg1->id.i,row->arg2->i.value,row->temp->id.i);
+							stack[++nentries]=row->temp; 
+							if(tactable->nrows==0)
+								tactable->tacRow=row;
+							else
+							{
+								tac *cur=tactable->tacRow;
+								while(cur->next!=NULL)
+									cur=cur->next;
+									cur->next=row;
+							}
+							tactable->nrows++; 
+							break;             
+						case '/':   
+							printf("\tdiv\n"); 
+							arg1=stack[nentries--];
+							arg2=stack[nentries--]; 
+							row=(tac *)malloc(sizeof(tac));
+							row->oprtr=p;
+							row->arg1=arg1;
+							row->arg2=arg2;
+							row->temp=strcat("t",(temporary++)+'a');
+							break;             
 						case '<':   printf("\tcompLT\n"); break;                         
 						case LE:    printf("\tcompLE\n"); break;                         
 						case 285:    printf("\tcompEQ\n"); break; //Comparison =             
@@ -213,4 +325,28 @@ nodeType *ex(nodeType *p)
 				}     
 			}     
 			return p; 
+}
+
+void display_tac_table(TAC *t)
+{
+	tac *cur=t->tacRow;
+	printf("+-------+-------+-------+-------+-----+\n");
+	printf("|OPERATOR|ARGUMENT 1|ARGUMENT 2|RESULT|\n");
+	while(cur!=NULL)
+	{
+		printf("%d\t |",cur->oprtr->opr.oper);
+		if(cur->arg1->type==typeId)
+			printf("%c|",cur->arg1->id.i);
+		else
+			printf("%d|",cur->arg1->i.value);
+		if(cur->arg2==NULL)
+			printf("(null)\t|");
+		else if(cur->arg2->type==typeId)
+			printf("%s\t|",cur->arg2->id.i);
+		else
+			printf("%d\t|",cur->arg2->i.value);
+		printf("%s\t|\n",cur->temp->id.i);
+		cur=cur->next;
+	}
+	printf("+-------+-------+-------+-------+-------+------+------+------+-------+-------+------+------+------+-------+\n");
 }

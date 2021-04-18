@@ -18,7 +18,7 @@ typedef struct {
 
 /* identifiers */ 
 typedef struct {     
-	int i;                      /* subscript to sym table */ 
+	char *i;                      /* subscript to sym table */ 
 } idNodeType; 
 
 /* operators */ 
@@ -39,6 +39,20 @@ typedef struct nodeTypeTag {
 	}; 
 } nodeType;
 
+typedef struct tacRow {
+	struct nodeTypeTag *oprtr;
+	struct nodeTypeTag *arg1;
+	struct nodeTypeTag *arg2;
+	struct nodeTypeTag *temp;
+	struct tacRow *next;
+}tac;
+
+typedef struct tacTable {
+	tac *tacRow;
+	int nrows;
+}TAC;
+
+
 nodeType *bool_constant(char *value);
 nodeType *integer_constant(int value);
 nodeType *str_constant(char *value);
@@ -46,3 +60,4 @@ nodeType *identifier(char *id);
 nodeType *opr(int oper, int nops, ...); 
 nodeType *ex(nodeType *p);
 int exGraph(nodeType *p);
+void display_tac_table(TAC *t);
