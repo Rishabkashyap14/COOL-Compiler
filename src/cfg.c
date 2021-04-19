@@ -3,6 +3,7 @@
 #include <string.h>
 #include<malloc.h>
 #include<errno.h>
+#include<stdlib.h>
 #include "y.tab.h"
 
 CFG *initialize_graph()
@@ -55,12 +56,11 @@ CFG *create_cfg(TAC *t)
 		{
 			tac *cur_1 = basic_block->bb->tacRow;
 			while((cur_1->next) != NULL)
-				cur_1=cur_1->next;
+				cur_1 = cur_1->next;
 			cur_1->next=row;
 		}
-		basic_block->bb->nrows++; 
+		basic_block->bb->nrows++;
 		cur = cur->next;
-		free(row);
 	}
 	printf("########## Basic Block ###########\n");
 	int strRed1=strengthReduction(basic_block->bb);
@@ -78,28 +78,5 @@ CFG *create_cfg(TAC *t)
 	//display_tac_table(basic_block->bb);
 	g->root = basic_block;
 	printf("########## Basic Block ###########\n");
-	tac *cur1=t->tacRow;
-	BB *basic_block1=initialize_bb();
-	basic_block1->bb=initialize_tac();
-	while(cur1!=NULL && (cur1->oprtr->type == typeOpr || (cur1->oprtr->type == typeId && strcmp(cur1->oprtr->id.i,"Label"))))
-	{
-		tac *row1=(tac *)malloc(sizeof(tac));
-		row->oprtr=cur1->oprtr;
-		row->arg1=cur1->arg1;
-		row->arg2=cur1->arg2;
-		row->temp=cur1->temp;
-		if(basic_block->bb->nrows==0)
-			basic_block->bb->tacRow = row;
-		else
-		{
-			tac *cur_2 = basic_block->bb->tacRow;
-			while((cur_2->next) != NULL)
-				cur_2=cur_2->next;
-			cur_2->next=row;
-		}
-		basic_block->bb->nrows++; 
-		cur1 = cur1->next;
-		free(row);
-	}
 	return g;
 }

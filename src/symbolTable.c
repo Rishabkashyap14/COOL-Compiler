@@ -41,8 +41,8 @@ entry *create_entry(char* str, int data_type, int declared, int use, int scope, 
         E->scope = scope;
         if(value)
                 strcpy(E->val, value);
-	E->index=i;
-	i++;
+		E->index=i;
+		i++;
         return E;
 }
 
@@ -118,7 +118,7 @@ void display_table(table *t)
 {
 	entry *cur=t->head;
 	printf("+-------+-------+-------+-------+-------+------+------+------+-------+-------+------+------+------+-------+\n");
-	printf("|INDEX\t\t|DATA\t\t\t|DATA TYPE\t|DECLARED\t|USE\t\t|SCOPE\t\t|VALUE\t\t|\n");
+	printf("|INDEX\t\t|DATA\t\t\t|DATA TYPE\t\t|DECLARED\t\t|USE\t\t|SCOPE\t\t|VALUE\t\t|\n");
 	while(cur!=NULL)
 	{
 		printf("|%d\t\t|%s\t\t\t|%d\t\t|%d\t\t|%d\t\t|%d\t\t|%s\t\t|\n",cur->index,cur->str,cur->data_type,cur->declared,cur->use,cur->scope,cur->val);
@@ -127,21 +127,3 @@ void display_table(table *t)
 	printf("+-------+-------+-------+-------+-------+------+------+------+-------+-------+------+------+------+-------+\n");
 	printf("For data type, we have 0 for bool 1 for int 2 for string 3 for identifier\n For USE, we have 0 for parameter, 1 for argument, 2 for return, 3 for method, 4 for classname, 5 object\n");
 }
-int update_value(char *str,table *t, char *value)
-{
-	int i=lookup_entry_by_str(str,t);
-	if(i==0)
-	{
-		printf("Variable not found in the symbol table\n");
-		return 0;
-	}
-	else
-	{
-		entry* p = t->head;
-		while(p->index != i)
-			p=p->next;
-		strcpy(p->val,value);
-	}
-	return 1;
-}
-	
