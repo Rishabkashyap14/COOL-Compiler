@@ -1611,7 +1611,7 @@ yyreduce:
 
   case 25:
 #line 192 "COOL.y" /* yacc.c:1646  */
-    {(yyval.sval)=(yyvsp[-1].sval);}
+    {(yyval.sval)=ex((yyvsp[-1].sval));}
 #line 1616 "y.tab.c" /* yacc.c:1646  */
     break;
 
@@ -2137,17 +2137,18 @@ int main(int argc, char **argv)
 	printf("Symbol Table:\n");
 	display_table(t);
 	display_tac_table(tactable);
+	CFG* cfg = create_cfg(tactable);
 	int strRed1=strengthReduction(tactable);
 	display_tac_table(tactable);
 	int conProp1=constantPropagation(tactable);
 	display_tac_table(tactable);
 	int conFold1=constantFolding(tactable);
 	display_tac_table(tactable);
-	int deadEli1=deadcodeElimination(tactable);
-	display_tac_table(tactable);
-	int copyProp1=copyPropagation(tactable);
-	display_tac_table(tactable);
-	int commonSubExpr1=commonSubExprElimination(tactable);
-	display_tac_table(tactable);
+	//int deadEli1=deadcodeElimination(tactable);
+	//display_tac_table(tactable);
+	//int copyProp1=copyPropagation(tactable);
+	//display_tac_table(tactable);
+	//int commonSubExpr1=commonSubExprElimination(tactable);
+	//display_tac_table(tactable);
 	return 0;
 }

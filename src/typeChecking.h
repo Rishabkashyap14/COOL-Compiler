@@ -77,3 +77,4 @@ int constantFolding(TAC *t);
 int deadcodeElimination(TAC *t);
 int copyPropagation(TAC *t);
 int commonSubExprElimination(TAC *t);
+CFG *create_cfg(TAC *t);

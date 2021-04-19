@@ -189,7 +189,7 @@ exprs_comma	: expr
 		;
 
 exprs_semi	: expr ';'
-		{$$=$1;}
+		{$$=ex($1);}
 		| exprs_semi expr ';'
 		{$$ = ex(opr(';', 2,NULL,$2));}
 		;
@@ -339,17 +339,18 @@ int main(int argc, char **argv)
 	printf("Symbol Table:\n");
 	display_table(t);
 	display_tac_table(tactable);
+	CFG* cfg = create_cfg(tactable);
 	int strRed1=strengthReduction(tactable);
 	display_tac_table(tactable);
 	int conProp1=constantPropagation(tactable);
 	display_tac_table(tactable);
 	int conFold1=constantFolding(tactable);
 	display_tac_table(tactable);
-	int deadEli1=deadcodeElimination(tactable);
-	display_tac_table(tactable);
-	int copyProp1=copyPropagation(tactable);
-	display_tac_table(tactable);
-	int commonSubExpr1=commonSubExprElimination(tactable);
-	display_tac_table(tactable);
+	//int deadEli1=deadcodeElimination(tactable);
+	//display_tac_table(tactable);
+	//int copyProp1=copyPropagation(tactable);
+	//display_tac_table(tactable);
+	//int commonSubExpr1=commonSubExprElimination(tactable);
+	//display_tac_table(tactable);
 	return 0;
 }

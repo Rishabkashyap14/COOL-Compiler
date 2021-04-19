@@ -87,11 +87,14 @@ int deadcodeElimination(TAC *t)
 				break;
 			con=con->next;
 		}
-		if(con==NULL)
+		if(con==NULL && cur->oprtr->type == typeOpr)
 		{
 			if(cur==t->tacRow)
 				t->tacRow=cur->next;
-			prev->next=cur->next;
+			else
+			{
+				prev->next=cur->next;
+			}
 		}
 		prev=cur;
 		cur=cur->next;
