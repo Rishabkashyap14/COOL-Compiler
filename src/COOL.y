@@ -189,7 +189,7 @@ exprs_comma	: expr
 		;
 
 exprs_semi	: expr ';'
-		{$$=$1;}
+		{$$=ex($1);}
 		| exprs_semi expr ';'
 		{$$ = ex(opr(';', 2,NULL,$2));}
 		;
