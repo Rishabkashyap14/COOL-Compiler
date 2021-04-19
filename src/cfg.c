@@ -39,11 +39,13 @@ TAC *initialize_tac()
 
 CFG *create_cfg(TAC *t)
 {
+	int deadEli1=deadcodeElimination(t);
+	display_tac_table(t);
 	CFG *g = initialize_graph();
 	tac *cur=t->tacRow;
 	BB *basic_block=initialize_bb();
 	basic_block->bb=initialize_tac();
-	while(cur!=NULL && (cur->oprtr->type == typeOpr || (cur->oprtr->type == typeId && strcmp(cur->oprtr->id.i,"Label"))))
+	while(cur!=NULL && (cur->oprtr->type == typeOpr || (cur->oprtr->type == typeId && strcmp(cur->oprtr->id.i,"if"))))
 	{
 		tac *row=(tac *)malloc(sizeof(tac));
 		row->oprtr=cur->oprtr;
@@ -62,21 +64,75 @@ CFG *create_cfg(TAC *t)
 		basic_block->bb->nrows++;
 		cur = cur->next;
 	}
-	printf("########## Basic Block ###########\n");
+	printf("########## Basic Block 1###########\n");
+	printf("Strength Reduction\n");
 	int strRed1=strengthReduction(basic_block->bb);
 	display_tac_table(basic_block->bb);
+	printf("Constant Propagation\n");
 	int conProp1=constantPropagation(basic_block->bb);
 	display_tac_table(basic_block->bb);
+	printf("Constant Folding\n");
 	int conFold1=constantFolding(basic_block->bb);
 	display_tac_table(basic_block->bb);
 	//int deadEli1=deadcodeElimination(basic_block->bb);
 	//display_tac_table(basic_block->bb);
+	printf("Copy Propagation\n");
 	int copyProp1=copyPropagation(basic_block->bb);
 	display_tac_table(basic_block->bb);
+	printf("Common Subexpression Elimination\n");
 	int commonSubExpr1=commonSubExprElimination(basic_block->bb);
 	display_tac_table(basic_block->bb);
 	//display_tac_table(basic_block->bb);
 	g->root = basic_block;
-	printf("########## Basic Block ###########\n");
+	printf("########## Basic Block 2###########\n");
+	cur=cur->next;
+	BB *basic_block1=initialize_bb();
+	basic_block1->bb=initialize_tac();
+	while(cur!=NULL && (cur->oprtr->type == typeOpr || (cur->oprtr->type == typeId && strcmp(cur->oprtr->id.i,"goto"))))
+	{
+		tac *row=(tac *)malloc(sizeof(tac));
+		row->oprtr=cur->oprtr;
+		row->arg1=cur->arg1;
+		row->arg2=cur->arg2;
+		row->temp=cur->temp;
+		if(basic_block1->bb->nrows==0)
+			basic_block1->bb->tacRow = row;
+		else
+		{
+			tac *cur_1 = basic_block1->bb->tacRow;
+			while((cur_1->next) != NULL)
+				cur_1 = cur_1->next;
+			cur_1->next=row;
+		}
+		basic_block1->bb->nrows++;
+		cur = cur->next;
+	}
+	basic_block->left=basic_block1;
+	display_tac_table(basic_block1->bb);
+	printf("########## Basic Block 3###########\n");
+	cur=cur->next->next;
+	BB *basic_block2=initialize_bb();
+	basic_block2->bb=initialize_tac();
+	while(cur!=NULL && (cur->oprtr->type == typeOpr || (cur->oprtr->type == typeId && strcmp(cur->oprtr->id.i,"Label"))))
+	{
+		tac *row=(tac *)malloc(sizeof(tac));
+		row->oprtr=cur->oprtr;
+		row->arg1=cur->arg1;
+		row->arg2=cur->arg2;
+		row->temp=cur->temp;
+		if(basic_block2->bb->nrows==0)
+			basic_block2->bb->tacRow = row;
+		else
+		{
+			tac *cur_1 = basic_block2->bb->tacRow;
+			while((cur_1->next) != NULL)
+				cur_1 = cur_1->next;
+			cur_1->next=row;
+		}
+		basic_block2->bb->nrows++;
+		cur = cur->next;
+	}
+	basic_block->right=basic_block2;
+	display_tac_table(basic_block2->bb);
 	return g;
 }

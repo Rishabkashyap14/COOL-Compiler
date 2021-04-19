@@ -121,7 +121,7 @@ int copyPropagation(TAC *t)
 		}
 		cur=cur->next;
 	}
-	int i=deadcodeElimination(t);
+	//int i=deadcodeElimination(t);
 	return 0;
 }
 
