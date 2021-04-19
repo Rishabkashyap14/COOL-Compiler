@@ -340,12 +340,14 @@ int main(int argc, char **argv)
 	display_table(t);
 	display_tac_table(tactable);
 	CFG* cfg = create_cfg(tactable);
+	/*
 	int strRed1=strengthReduction(tactable);
 	display_tac_table(tactable);
 	int conProp1=constantPropagation(tactable);
 	display_tac_table(tactable);
 	int conFold1=constantFolding(tactable);
 	display_tac_table(tactable);
+	*/
 	//int deadEli1=deadcodeElimination(tactable);
 	//display_tac_table(tactable);
 	//int copyProp1=copyPropagation(tactable);

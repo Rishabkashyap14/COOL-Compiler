@@ -1,5 +1,5 @@
 
-#line 2 "lex.yy.c"
+#line 3 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -610,15 +610,9 @@ char string_buf[MAX_STR_CONST]; /* to assemble string constants */
 char *string_buf_ptr;
 #include "y.tab.h"
 int mcomment_count; /* to handle nested multiline comments */
-<<<<<<< HEAD
 #line 614 "lex.yy.c"
 
 #line 616 "lex.yy.c"
-=======
-#line 613 "lex.yy.c"
-
-#line 615 "lex.yy.c"
->>>>>>> b16ab09e91d2c4edd096347f5b881fa0ed52b7ce
 
 #define INITIAL 0
 #define COMMENT_M 1
@@ -842,11 +836,7 @@ YY_DECL
 
 
 
-<<<<<<< HEAD
 #line 840 "lex.yy.c"
-=======
-#line 839 "lex.yy.c"
->>>>>>> b16ab09e91d2c4edd096347f5b881fa0ed52b7ce
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1273,11 +1263,7 @@ YY_RULE_SETUP
 #line 284 "cool.l"
 ECHO;
 	YY_BREAK
-<<<<<<< HEAD
 #line 1267 "lex.yy.c"
-=======
-#line 1266 "lex.yy.c"
->>>>>>> b16ab09e91d2c4edd096347f5b881fa0ed52b7ce
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT_M):
 case YY_STATE_EOF(ESCAPE):
