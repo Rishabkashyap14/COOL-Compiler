@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include "y.tab.h"
 #include "cool.h"
+extern void yyerror (char *s);
 static int lbl;
 extern TAC *tactable;
 static int temporary;
@@ -89,12 +90,9 @@ nodeType *opr(int oper, int nops, ...)
 	va_start(ap, nops);     
 	for (i = 0; i < nops; i++)         
 		result->opr.op[i] = va_arg(ap, nodeType *); 
-	/*if(result->opr.oper=='+' || result->opr.oper=='-' ||  result->opr.oper=='*' || result->opr.oper=='/' || result->opr.oper=='<'|| result->opr.oper==DARROW)
-		if(result->opr.op[0]->type!=typeInt || result->opr.op[1]->type!=typeInt || result->opr.op[0]->type!=typeId || result->opr.op[1]->type!=typeId)
-			yyerror("Cannot perform arithmetic operation with one non-integer constant.");
-	if(result->opr.oper==NOT)
-		if(result->opr.op[0]->type!=typeBool)
-			yyerror("Requires Boolean operand.");*/
+	if(result->opr.oper=='+' || result->opr.oper=='-' ||  result->opr.oper=='*' || result->opr.oper=='/' || result->opr.oper=='<'|| result->opr.oper==DARROW)
+		if(result->opr.op[0]->type==typeStr || result->opr.op[1]->type==typeStr)
+			yyerror("Cannot perform arithmetic operation with one non-integer constant or identifier.");
 	if(result->opr.oper=='.')
 		if(result->opr.op[1]->type!=typeId)
 			yyerror("Object identifier must follow the . operator.");
@@ -228,17 +226,17 @@ nodeType *ex(nodeType *p)
 					}
 					tactable->nrows++;            
 					break;         
-				case IF:             
-					ex(p->opr.op[0]); 
+				case IF:
+					ex(opr(NOT,1,p->opr.op[0])); 
 					printf("\tjz\tL%03d\n", lbl1 = lbl++);
-					arg1=NULL;
+					arg1=stack[nentries--];
 					arg2=NULL; 
 					row=(tac *)malloc(sizeof(tac));
 					strcpy(label,"L");
 					snprintf(number,3,"%d",lbl1);
 					strcat(label,number);
-					row->oprtr=identifier("goto");
-					row->arg1=NULL;
+					row->oprtr=identifier("if");
+					row->arg1=arg1;
 					row->arg2=NULL;
 					row->temp=identifier(label);
 					//printf("%c\t%i\t(null)\t%s\n",row->oprtr->opr.oper,row->arg1->i.value,row->temp->id.i);
@@ -711,20 +709,30 @@ nodeType *ex(nodeType *p)
 void display_tac_table(TAC *t)
 {
 	tac *cur=t->tacRow;
-	printf("+-------+-------+-------+-------+-----+\n");
-	printf("|OPERATOR|ARGUMENT 1|ARGUMENT 2|RESULT|\n");
+	printf("+-------+-------+-------+---------+\n");
+	printf("|OPERATOR|ARG 1\t|ARG 2\t|RESULT\t|\n");
 	while(cur!=NULL)
 	{
 		if(cur->oprtr->type==typeId)
 			printf("%s\t|",cur->oprtr->id.i);
+		else if(cur->oprtr->opr.oper==280)
+			printf("<-\t |");
+		else if(cur->oprtr->opr.oper==LE)
+			printf("<=\t |");	
+		else if(cur->oprtr->opr.oper==DARROW)
+			printf("=>\t |");
+		else if(cur->oprtr->opr.oper==285)
+			printf("=\t |");
+		else if(cur->oprtr->opr.oper==NOT)
+			printf("NOT\t |");	
 		else
-			printf("%d\t |",cur->oprtr->opr.oper);
+			printf("%c\t |",cur->oprtr->opr.oper);
 		if(cur->arg1==NULL)
 			printf("(null)\t|");
 		else if(cur->arg1->type==typeId)
-			printf("%s|",cur->arg1->id.i);
+			printf("%s\t|",cur->arg1->id.i);
 		else
-			printf("%d|",cur->arg1->i.value);
+			printf("%d\t|",cur->arg1->i.value);
 		if(cur->arg2==NULL)
 			printf("(null)\t|");
 		else if(cur->arg2->type==typeId)
@@ -734,5 +742,5 @@ void display_tac_table(TAC *t)
 		printf("%s\t|\n",cur->temp->id.i);
 		cur=cur->next;
 	}
-	printf("+-------+-------+-------+-------+-------+\n");
+	printf("+-------+-------+-------+--------+\n");
 }

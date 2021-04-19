@@ -52,6 +52,16 @@ typedef struct tacTable {
 	int nrows;
 }TAC;
 
+typedef struct basicBlock {
+	TAC *bb;
+	struct basicBlock *left;
+	struct basicBlock *right;
+}BB;
+
+typedef struct controlFlowGraph {
+	BB *root;
+	int nblocks;
+}CFG;
 
 nodeType *bool_constant(char *value);
 nodeType *integer_constant(int value);
