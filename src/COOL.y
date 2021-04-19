@@ -77,10 +77,11 @@ class_list
 	: class			/* single class */
 	{$$=$<ival>1;}
 	| error ';'
+	{yyerror("Incorrect class definition\n");}
 	| class_list class	/* several classes */
 	{$$ = $<ival>2;}
 	| class_list error ';'
-	{}
+	{yyerror("Incorrect class definition\n");}
 	;
 
 
@@ -117,16 +118,20 @@ class	: CLASS TYPEID '{' feature_list '}' ';'/*without inherits i.e. from Object
 feature_list	: feature ';'	/*single feature */
 		{$$=$1;}
 		| error ';'	/*no features */
+		{yyerror("Error in feature\n");}
 		| feature_list feature ';'	/*several features */
 		{$$=$2;}
 		| feature_list error ';'
+		{
+			yyerror("Error in subsequent features\n");
+		}
 		;
 
 /* RULE 3 */
 /* feature::= ID([formal[,formal]*]):TYPE{expr}	..(i)
 	|	ID:TYPE[<-expr]			..(ii) */
 feature	: OBJECTID '(' formals_list ')' ':' TYPEID '{' expr '}' /* For a method(i) */
-	{$$=ex($1);}//,$3,$1,$6);}
+	{$$=$8;}//,$3,$1,$6);}
 	| OBJECTID '(' formals_list ')' ':' TYPEID '{' '}'	/* no expression */
 	{$$=ex(NULL);}//,$3,$1,$6);}
 	| OBJECTID '(' ')' ':' TYPEID '{' '}'			/* no formal parameters and expressions*/
@@ -184,7 +189,7 @@ exprs_comma	: expr
 		;
 
 exprs_semi	: expr ';'
-		{$$=ex($1);}
+		{$$=$1;}
 		| exprs_semi expr ';'
 		{$$ = ex(opr(';', 2,NULL,$2));}
 		;
@@ -199,8 +204,7 @@ cases 	: case
 	{$$=$2;}
 	;
 
-opt_assign	: 
-		| ASSIGN expr
+opt_assign	:ASSIGN expr
 		{
 			$$=opr('=',1,$2);
 		}
@@ -212,7 +216,10 @@ let_expr	: OBJECTID ':' TYPEID opt_assign IN expr
 		| OBJECTID ':' TYPEID opt_assign ',' let_expr
 		{$$ = opr(LET, 3, identifier($1),identifier($4),$<sval>5);}
 		| error ',' let_expr
-		{$$=$3;}
+		{
+			yyerror("Error in let expression.\n");
+			$$=$3;
+		}
 		;
 
 expr	: OBJECTID ASSIGN expr
@@ -256,7 +263,9 @@ expr	: OBJECTID ASSIGN expr
 	| '{' exprs_semi '}'
 	{$$ = $2;}
 	| '{' '}'
+	{;}
 	| '{' error '}'
+	{yyerror("Incorrect expression\n");}
 	| LET let_expr 
 	{$$=$<ival>1;}
 	| CASE expr OF cases ESAC
@@ -315,9 +324,11 @@ void yyerror(char *s)
 int main(int argc, char **argv)
 {	
 	t = initialize();
+
 	tactable=(TAC *)malloc(sizeof(TAC));
 	tactable->nrows=0;
 	tactable->tacRow=NULL;
+
 	printf("Inside main\n");
 	FILE * fp= fopen(argv[1], "r");
 	yyin = fp;

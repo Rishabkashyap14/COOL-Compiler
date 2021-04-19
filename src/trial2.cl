@@ -8,6 +8,12 @@ class A {
 		e<-b*2;
 		f<-a+d;
 		g<-e*f;
+		if g < num then
+                     {x <- g - num;}
+            	else
+               	     {x <- num - g;}
+            	fi;
 	} 
     };
 };
+

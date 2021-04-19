@@ -13,7 +13,6 @@
 
 extern table *t;
 entry* node = NULL;
-
 int yylex();
 void yyerror(char* s);
 char string_buf[MAX_STR_CONST]; /* to assemble string constants */

@@ -132,7 +132,7 @@ int commonSubExprElimination(TAC *t)
 		while(con!=NULL)
 		{
 			if(
-((con->arg1->type==NULL && cur->arg1->type==NULL) && (con->arg2->type==NULL && cur->arg2->type==NULL)) ||
+((con->arg1==NULL && cur->arg1==NULL) && (con->arg2==NULL && cur->arg2==NULL)) ||
 (con->arg1!=NULL && con->arg2!=NULL && cur->arg1!=NULL && cur->arg2!=NULL && con->arg1->type==cur->arg1->type && con->arg2->type==cur->arg2->type && con->oprtr->opr.oper==cur->oprtr->opr.oper))
 			{
 				if(((con->arg1->type==typeInt && con->arg1->i.value==cur->arg1->i.value)
