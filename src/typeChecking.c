@@ -16,6 +16,7 @@ extern table *t;
 char temp[10];
 char label[10];
 char number[10];
+char buf[BUFSIZ];
 /*Check if dollar stuff gives int or char * */
 
 /*Handling constant datatypes */
@@ -356,6 +357,8 @@ nodeType *ex(nodeType *p)
         			case ASSIGN:                    
 					printf("\tpush\t%s\n", p->opr.op[0]->id.i); 
 					ex(p->opr.op[1]);
+					snprintf(buf, sizeof(buf), "%d",  p->opr.op[1]->i.value);
+					update_value(p->opr.op[0]->id.i , t , buf);
 					arg1=stack[nentries--];
 					arg2=NULL; 
 					row=(tac *)malloc(sizeof(tac));
@@ -431,6 +434,8 @@ nodeType *ex(nodeType *p)
 					break;   
 				case '=':
 					ex(p->opr.op[0]); 
+					snprintf(buf, sizeof(buf), "%d",  p->opr.op[1]->i.value);
+					update_value(p->opr.op[0]->id.i , t , buf);
 					arg1=stack[nentries--];
 					arg2=NULL; 
 					row=(tac *)malloc(sizeof(tac));
