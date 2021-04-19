@@ -1,6 +1,7 @@
 class A {
     set_var(num : Int) : SELF_TYPE {
 	{
+		num<-10;
 		a<-num*2;
 		b<-3;
 		c<-num;

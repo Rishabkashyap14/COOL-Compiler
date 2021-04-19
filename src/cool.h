@@ -33,6 +33,7 @@ int lookup_entry_by_index(int index,table *t);
 table *insert_entry(entry *node,table *t);
 table *delete_entry(int i, table* t);
 void display_table(table *t);
+int update_value(char *str,table *t, char *value);
 
 
 
