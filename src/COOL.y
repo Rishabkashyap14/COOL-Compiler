@@ -296,7 +296,6 @@ expr	: OBJECTID ASSIGN expr
 	{$$=$2;}
 	| OBJECTID 
 	{
-		printf("OBJECT ID: %s\n",$<sval>1);
 		$$=identifier($1);
 	}
 	| STR_CONST

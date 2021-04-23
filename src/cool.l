@@ -161,13 +161,13 @@ printf("%s\n",yytext);
     return FALSE;
 }
 {OBJ_ID} {
-	printf("OBJECT id:%s\n",yytext);
+	//printf("OBJECT id:%s\n",yytext);
 	yylval.sval=strdup(yytext);
     if(!lookup_entry_by_str(yytext, t))
     {
 		node=create_entry(yytext,3,yylineno,5,0,"0");
 		t=insert_entry(node,t);
-		printf("inserted\n");
+		//printf("inserted\n");
     }
     return OBJECTID;
 }
@@ -179,7 +179,7 @@ printf("%s\n",yytext);
 	{
 		node=create_entry(yytext,3,yylineno,4,0,"0");
 		t=insert_entry(node,t);
-		printf("inserted\n");
+		//printf("inserted\n");
     }
     return TYPEID;
 }
@@ -272,7 +272,6 @@ printf("%s\n",yytext);
 {COMMENT_M}
 {
 	printf("comment: %s\n",yytext);
-	
 }
 
 . {

@@ -1,5 +1,5 @@
 
-#line 2 "lex.yy.c"
+#line 3 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -610,9 +610,9 @@ char string_buf[MAX_STR_CONST]; /* to assemble string constants */
 char *string_buf_ptr;
 #include "y.tab.h"
 int mcomment_count; /* to handle nested multiline comments */
-#line 613 "lex.yy.c"
+#line 614 "lex.yy.c"
 
-#line 615 "lex.yy.c"
+#line 616 "lex.yy.c"
 
 #define INITIAL 0
 #define COMMENT_M 1
@@ -836,7 +836,7 @@ YY_DECL
 
 
 
-#line 839 "lex.yy.c"
+#line 840 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1068,13 +1068,13 @@ case 20:
 YY_RULE_SETUP
 #line 163 "cool.l"
 {
-	printf("OBJECT id:%s\n",yytext);
+	//printf("OBJECT id:%s\n",yytext);
 	yylval.sval=strdup(yytext);
     if(!lookup_entry_by_str(yytext, t))
     {
 		node=create_entry(yytext,3,yylineno,5,0,"0");
 		t=insert_entry(node,t);
-		printf("inserted\n");
+		//printf("inserted\n");
     }
     return OBJECTID;
 }
@@ -1089,7 +1089,7 @@ YY_RULE_SETUP
 	{
 		node=create_entry(yytext,3,yylineno,4,0,"0");
 		t=insert_entry(node,t);
-		printf("inserted\n");
+		//printf("inserted\n");
     }
     return TYPEID;
 }
@@ -1251,7 +1251,7 @@ YY_RULE_SETUP
 
 case 37:
 YY_RULE_SETUP
-#line 278 "cool.l"
+#line 277 "cool.l"
 {
 printf("%s\n",yytext);
     yylval.error_msg = "Unexpected character";
@@ -1260,10 +1260,10 @@ printf("%s\n",yytext);
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 284 "cool.l"
+#line 283 "cool.l"
 ECHO;
 	YY_BREAK
-#line 1266 "lex.yy.c"
+#line 1267 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT_M):
 case YY_STATE_EOF(ESCAPE):
@@ -2270,7 +2270,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 284 "cool.l"
+#line 283 "cool.l"
 
 
 int yywrap() { return 1;}
